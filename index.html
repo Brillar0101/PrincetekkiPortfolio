@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronics Engineer & CAD Designer Portfolio</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">EE Portfolio</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#portfolio">My Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Electronics Engineer & CAD Designer</h1>
+                <p class="subtitle">Innovating Tomorrow's Technology</p>
+                <p>Passionate electronics engineer with expertise in circuit design, PCB layout, and CAD modeling. I transform complex technical challenges into elegant, efficient solutions that drive innovation in the electronics industry.</p>
+            </div>
+            <div class="hero-image">
+                <div class="profile-pic">
+                    Your Professional Photo Here
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showreel Section -->
+    <section class="showreel">
+        <div class="showreel-container">
+            <h2>Portfolio Showreel</h2>
+            <div class="video-placeholder">
+                📹 Your Project Showreel Video Here
+                <br>
+                <small>(Upload your demo reel showcasing your best work)</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expertise Section -->
+    <section class="expertise">
+        <div class="expertise-container">
+            <h2 class="section-title">Areas of Expertise</h2>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <div class="tool-icon">⚡</div>
+                    <h3>Circuit Design</h3>
+                    <p>Advanced analog and digital circuit design using industry-standard tools and methodologies</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="tool-icon">🔧</div>
+                    <h3>PCB Layout</h3>
+                    <p>Professional PCB design and layout optimization for manufacturing and performance</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="tool-icon">📐</div>
+                    <h3>CAD Modeling</h3>
+                    <p>3D modeling and mechanical design integration for complete product development</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="tool-icon">🔬</div>
+                    <h3>Testing & Validation</h3>
+                    <p>Comprehensive testing protocols and validation procedures for electronic systems</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="tool-icon">🖥️</div>
+                    <h3>Embedded Systems</h3>
+                    <p>Microcontroller programming and embedded system design for IoT applications</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="tool-icon">📊</div>
+                    <h3>Signal Processing</h3>
+                    <p>Digital signal processing and analysis for communication and control systems</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Projects Preview -->
+    <section class="projects-preview">
+        <div class="projects-container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-scroll" id="featured-projects-scroll">
+                <!-- Projects will be dynamically populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Let's Build Something Amazing Together</h2>
+            <p>Ready to bring your electronics project to life? Get in touch and let's discuss how we can collaborate.</p>
+            <a href="#contact" class="btn" onclick="showSection('contact-page'); return false;">Get In Touch</a>
+        </div>
+    </section>
+
+    <!-- Portfolio Sections -->
+    <section id="portfolio" class="portfolio-sections" style="display: none;">
+        <div class="portfolio-container">
+            <h2 class="section-title">My Portfolio</h2>
+            
+            <!-- Embedded Systems Design Section -->
+            <div class="portfolio-section">
+                <h3 class="subsection-title">🔌 Embedded Systems Design</h3>
+                <div class="projects-grid">
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/iot-weather-station.jpg" alt="IoT Weather Station">
+                            <div class="project-title">IoT Weather Station</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Smart Weather Monitoring System</h4>
+                            <p>ESP32-based weather station with cloud connectivity, featuring temperature, humidity, and pressure sensors with real-time data visualization.</p>
+                            <div class="project-tech">ESP32 • C++ • AWS IoT</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/home-automation.jpg" alt="Home Automation System">
+                            <div class="project-title">Home Automation</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Smart Home Controller</h4>
+                            <p>Raspberry Pi-based home automation system with voice control, mobile app integration, and energy monitoring capabilities.</p>
+                            <div class="project-tech">Raspberry Pi • Python • MQTT</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/wearable-health.jpg" alt="Wearable Health Device">
+                            <div class="project-title">Wearable Health</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Fitness Tracker Device</h4>
+                            <p>Ultra-low-power wearable device with heart rate monitoring, step counting, and Bluetooth connectivity for health tracking.</p>
+                            <div class="project-tech">nRF52 • C • BLE</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/industrial-control.jpg" alt="Industrial Control System">
+                            <div class="project-title">Industrial Control</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Motor Control System</h4>
+                            <p>Real-time motor control system for industrial applications with precise speed regulation and fault detection mechanisms.</p>
+                            <div class="project-tech">STM32 • FreeRTOS • CAN Bus</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/security-system.jpg" alt="Security System">
+                            <div class="project-title">Security System</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Smart Security Gateway</h4>
+                            <p>Edge computing security system with facial recognition, intrusion detection, and encrypted cloud communication.</p>
+                            <div class="project-tech">ARM Cortex • OpenCV • TLS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Development Section -->
+            <div class="portfolio-section">
+                <h3 class="subsection-title">🎮 Game Development</h3>
+                <div class="projects-grid">
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/retro-arcade.jpg" alt="Retro Arcade Console">
+                            <div class="project-title">Retro Arcade</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Custom Arcade Console</h4>
+                            <p>Hardware-based retro gaming console with custom PCB, featuring classic games and modern display technology.</p>
+                            <div class="project-tech">FPGA • Verilog • SDL</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/vr-controller.jpg" alt="VR Controller">
+                            <div class="project-title">VR Controller</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Haptic VR Controller</h4>
+                            <p>Advanced VR controller with haptic feedback, motion tracking, and wireless connectivity for immersive gaming experiences.</p>
+                            <div class="project-tech">Unity • C# • IMU Sensors</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/led-matrix-game.jpg" alt="LED Matrix Game">
+                            <div class="project-title">LED Matrix Game</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>LED Matrix Gaming Board</h4>
+                            <p>Interactive LED matrix display system for retro-style games with touch controls and sound effects integration.</p>
+                            <div class="project-tech">Arduino • WS2812B • C++</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/racing-simulator.jpg" alt="Racing Simulator">
+                            <div class="project-title">Racing Simulator</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>DIY Racing Simulator Rig</h4>
+                            <p>Custom racing simulator with force feedback steering, pedal system, and motion platform for realistic driving experience.</p>
+                            <div class="project-tech">Arduino • Force Feedback • CAN</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/handheld-console.jpg" alt="Handheld Console">
+                            <div class="project-title">Handheld Console</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Portable Gaming Device</h4>
+                            <p>Custom handheld gaming console with rechargeable battery, color display, and library of original games.</p>
+                            <div class="project-tech">Raspberry Pi Zero • Python • PyGame</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PCB Design Section -->
+            <div class="portfolio-section">
+                <h3 class="subsection-title">🔧 PCB Design</h3>
+                <div class="projects-grid">
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/power-management.jpg" alt="Power Management PCB">
+                            <div class="project-title">Power Management</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Multi-Rail Power Supply</h4>
+                            <p>High-efficiency switching power supply with multiple output rails, over-current protection, and thermal management.</p>
+                            <div class="project-tech">Altium Designer • SMPS • EMI/EMC</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/rf-circuit.jpg" alt="RF Circuit Board">
+                            <div class="project-title">RF Circuit</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>2.4GHz Transceiver Board</h4>
+                            <p>High-frequency PCB design for wireless communication with optimized antenna matching and signal integrity.</p>
+                            <div class="project-tech">KiCad • RF Design • Smith Chart</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/sensor-interface.jpg" alt="Sensor Interface PCB">
+                            <div class="project-title">Sensor Interface</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Multi-Sensor Interface PCB</h4>
+                            <p>Versatile sensor interface board supporting I2C, SPI, and analog sensors with on-board signal conditioning.</p>
+                            <div class="project-tech">Eagle CAD • Mixed Signal • ADC</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/audio-amplifier.jpg" alt="Audio Amplifier PCB">
+                            <div class="project-title">Audio Amplifier</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Class-D Audio Amplifier</h4>
+                            <p>High-fidelity audio amplifier PCB with advanced filtering, thermal protection, and low distortion design.</p>
+                            <div class="project-tech">Altium • Audio Design • THD Analysis</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/usb-interface.jpg" alt="USB Interface Board">
+                            <div class="project-title">USB Interface</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>USB-C Development Board</h4>
+                            <p>Universal development board with USB-C connectivity, multiple I/O options, and programmable microcontroller.</p>
+                            <div class="project-tech">KiCad • USB-C PD • STM32</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Computer Vision Section -->
+            <div class="portfolio-section">
+                <h3 class="subsection-title">👁️ Computer Vision</h3>
+                <div class="projects-grid">
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/face-recognition.jpg" alt="Face Recognition System">
+                            <div class="project-title">Face Recognition</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Real-time Face Detection System</h4>
+                            <p>Edge-computing face recognition system with neural network acceleration and privacy-focused local processing.</p>
+                            <div class="project-tech">OpenCV • TensorFlow Lite • Coral AI</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/object-tracking.jpg" alt="Object Tracking System">
+                            <div class="project-title">Object Tracking</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Autonomous Drone Navigation</h4>
+                            <p>Computer vision-based drone navigation system with obstacle avoidance and target tracking capabilities.</p>
+                            <div class="project-tech">Python • YOLO • ROS</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/quality-control.jpg" alt="Quality Control System">
+                            <div class="project-title">Quality Control</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Industrial Inspection System</h4>
+                            <p>Automated quality control system using machine learning for defect detection in manufacturing processes.</p>
+                            <div class="project-tech">scikit-learn • OpenCV • Raspberry Pi</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/gesture-control.jpg" alt="Gesture Control System">
+                            <div class="project-title">Gesture Control</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Hand Gesture Recognition</h4>
+                            <p>Real-time hand gesture recognition system for touchless control interfaces with high accuracy and low latency.</p>
+                            <div class="project-tech">MediaPipe • Python • ESP32-CAM</div>
+                        </div>
+                    </div>
+                    <div class="project-card-detailed">
+                        <div class="project-image">
+                            <img src="images/projects/smart-parking.jpg" alt="Smart Parking System">
+                            <div class="project-title">Smart Parking</div>
+                        </div>
+                        <div class="project-info">
+                            <h4>Intelligent Parking System</h4>
+                            <p>Computer vision-based parking management system with vehicle detection, license plate recognition, and occupancy monitoring.</p>
+                            <div class="project-tech">YOLO • OCR • Flask API</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Page -->
+    <section id="contact-page" class="contact-page" style="display: none;">
+        <div class="contact-container">
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="contact-subtitle">Ready to collaborate on your next electronics project? Let's connect and bring your ideas to life.</p>
+            
+            <div class="contact-content">
+                <!-- Contact Info & Social -->
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <div class="contact-icon">📧</div>
+                        <h3>Email Me</h3>
+                        <p>your.email@example.com</p>
+                        <a href="mailto:your.email@example.com" class="contact-link">Send Email</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📱</div>
+                        <h3>Call or Text</h3>
+                        <p>+1 (555) 123-4567</p>
+                        <a href="tel:+15551234567" class="contact-link">Call Now</a>
+                    </div>
+                    
+                    <div class="contact-card linkedin-card">
+                        <div class="contact-icon">💼</div>
+                        <h3>LinkedIn Profile</h3>
+                        <p>Connect with me professionally</p>
+                        <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link linkedin-link">
+                            <span class="linkedin-icon">in</span>
+                            View LinkedIn Profile
+                        </a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📍</div>
+                        <h3>Location</h3>
+                        <p>Christiansburg, Virginia, US</p>
+                        <p class="location-note">Available for remote work</p>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-section">
+                    <div class="form-container">
+                        <h3>Send Me a Message</h3>
+                        <form id="contact-form" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Your Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Your Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number (Optional)</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">Subject *</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select a topic...</option>
+                                    <option value="embedded-systems">Embedded Systems Project</option>
+                                    <option value="pcb-design">PCB Design Services</option>
+                                    <option value="game-development">Game Development</option>
+                                    <option value="computer-vision">Computer Vision Project</option>
+                                    <option value="consultation">Technical Consultation</option>
+                                    <option value="collaboration">Project Collaboration</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Your Message *</label>
+                                <textarea id="message" name="message" rows="6" required 
+                                    placeholder="Tell me about your project, timeline, budget, and any specific requirements..."></textarea>
+                            </div>
+                            
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="contact-preference" name="contact-preference">
+                                    <span class="checkmark"></span>
+                                    I prefer to be contacted via phone/text instead of email
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <span class="btn-text">Send Message</span>
+                                <span class="btn-loading" style="display: none;">Sending...</span>
+                            </button>
+                        </form>
+                        
+                        <div id="form-status" class="form-status"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Response Promise -->
+            <div class="response-promise">
+                <div class="promise-icon">⚡</div>
+                <div class="promise-text">
+                    <h4>Quick Response Guarantee</h4>
+                    <p>I'll get back to you within 24 hours on weekdays, usually much sooner!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript Files -->
+    <script src="js/main.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/contact-form.js"></script>
+</body>
+</html>
