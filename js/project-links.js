@@ -44,27 +44,27 @@ function makeProjectCardsClickable() {
         const projectTitle = card.querySelector('h4')?.textContent?.trim();
         if (!projectTitle) return;
         
-        // Remove any existing click handlers
-        card.replaceWith(card.cloneNode(true));
-        const newCard = document.querySelector(`[data-project-id="${projectTitle}"]`) || card;
+        // Skip if already processed
+        if (card.hasAttribute('data-clickable-processed')) return;
         
-        // Add data attribute for easier targeting
-        newCard.setAttribute('data-project-id', projectTitle);
+        // Mark as processed
+        card.setAttribute('data-clickable-processed', 'true');
+        card.setAttribute('data-project-id', projectTitle);
         
         // Add cursor pointer and hover effect
-        newCard.style.cursor = 'pointer';
-        newCard.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+        card.style.cursor = 'pointer';
+        card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
         
         // Add click event listener
-        newCard.addEventListener('click', function(e) {
+        card.addEventListener('click', function(e) {
             // Don't trigger if clicking on status badge
             if (e.target.closest('.project-status-badge')) return;
             
             const projectUrl = PROJECT_URL_MAP[projectTitle];
             if (projectUrl) {
                 // Add loading state
-                newCard.style.opacity = '0.7';
-                newCard.style.pointerEvents = 'none';
+                card.style.opacity = '0.7';
+                card.style.pointerEvents = 'none';
                 
                 console.log(`Navigating to: projects/${projectUrl}`);
                 window.location.href = `projects/${projectUrl}`;
@@ -83,22 +83,22 @@ function makeProjectCardsClickable() {
         });
         
         // Enhanced hover effects
-        newCard.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-8px)';
             this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.2)';
         });
         
-        newCard.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(-5px)'; // Keep slight elevation from original hover
             this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
         });
         
         // Add keyboard support
-        newCard.setAttribute('tabindex', '0');
-        newCard.setAttribute('role', 'button');
-        newCard.setAttribute('aria-label', `View details for ${projectTitle}`);
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `View details for ${projectTitle}`);
         
-        newCard.addEventListener('keydown', function(e) {
+        card.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 this.click();
@@ -112,27 +112,27 @@ function makeProjectCardsClickable() {
         const projectTitle = card.querySelector('h4')?.textContent?.trim();
         if (!projectTitle) return;
         
-        // Add data attribute
+        // Skip if already processed
+        if (card.hasAttribute('data-clickable-processed')) return;
+        
+        // Mark as processed
+        card.setAttribute('data-clickable-processed', 'true');
         card.setAttribute('data-project-id', projectTitle);
         
         // Add cursor pointer
         card.style.cursor = 'pointer';
         card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
         
-        // Remove existing listeners by cloning
-        const newCard = card.cloneNode(true);
-        card.parentNode.replaceChild(newCard, card);
-        
         // Add click event listener
-        newCard.addEventListener('click', function(e) {
+        card.addEventListener('click', function(e) {
             // Don't trigger if clicking on status badge
             if (e.target.closest('.project-status-badge')) return;
             
             const projectUrl = PROJECT_URL_MAP[projectTitle];
             if (projectUrl) {
                 // Add loading state
-                newCard.style.opacity = '0.7';
-                newCard.style.pointerEvents = 'none';
+                card.style.opacity = '0.7';
+                card.style.pointerEvents = 'none';
                 
                 console.log(`Navigating to: projects/${projectUrl}`);
                 window.location.href = `projects/${projectUrl}`;
@@ -151,22 +151,22 @@ function makeProjectCardsClickable() {
         });
         
         // Add hover effect to featured cards
-        newCard.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function() {
             this.style.transform = 'scale(1.05)';
             this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
         });
         
-        newCard.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function() {
             this.style.transform = 'scale(1)';
             this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
         });
         
         // Add keyboard support
-        newCard.setAttribute('tabindex', '0');
-        newCard.setAttribute('role', 'button');
-        newCard.setAttribute('aria-label', `View details for ${projectTitle}`);
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `View details for ${projectTitle}`);
         
-        newCard.addEventListener('keydown', function(e) {
+        card.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 this.click();
