@@ -1,4 +1,4 @@
-// Add this to your main.js file or create as project-links.js
+// Updated project-links.js - Complete URL mapping for all projects
 
 // Project URL mapping - maps project titles to their HTML file names
 const PROJECT_URL_MAP = {
@@ -44,17 +44,29 @@ function makeProjectCardsClickable() {
         const projectTitle = card.querySelector('h4')?.textContent?.trim();
         if (!projectTitle) return;
         
+        // Remove any existing click handlers
+        card.replaceWith(card.cloneNode(true));
+        const newCard = document.querySelector(`[data-project-id="${projectTitle}"]`) || card;
+        
+        // Add data attribute for easier targeting
+        newCard.setAttribute('data-project-id', projectTitle);
+        
         // Add cursor pointer and hover effect
-        card.style.cursor = 'pointer';
-        card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+        newCard.style.cursor = 'pointer';
+        newCard.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
         
         // Add click event listener
-        card.addEventListener('click', function(e) {
+        newCard.addEventListener('click', function(e) {
             // Don't trigger if clicking on status badge
             if (e.target.closest('.project-status-badge')) return;
             
             const projectUrl = PROJECT_URL_MAP[projectTitle];
             if (projectUrl) {
+                // Add loading state
+                newCard.style.opacity = '0.7';
+                newCard.style.pointerEvents = 'none';
+                
+                console.log(`Navigating to: projects/${projectUrl}`);
                 window.location.href = `projects/${projectUrl}`;
             } else {
                 console.warn(`No URL mapping found for project: ${projectTitle}`);
@@ -64,19 +76,33 @@ function makeProjectCardsClickable() {
                     .replace(/\s+/g, '-') // Replace spaces with hyphens
                     .replace(/-+/g, '-') // Remove multiple consecutive hyphens
                     + '.html';
+                
+                console.log(`Using fallback URL: projects/${fallbackUrl}`);
                 window.location.href = `projects/${fallbackUrl}`;
             }
         });
         
         // Enhanced hover effects
-        card.addEventListener('mouseenter', function() {
+        newCard.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-8px)';
             this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.2)';
         });
         
-        card.addEventListener('mouseleave', function() {
+        newCard.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(-5px)'; // Keep slight elevation from original hover
             this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+        });
+        
+        // Add keyboard support
+        newCard.setAttribute('tabindex', '0');
+        newCard.setAttribute('role', 'button');
+        newCard.setAttribute('aria-label', `View details for ${projectTitle}`);
+        
+        newCard.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
         });
     });
     
@@ -86,17 +112,29 @@ function makeProjectCardsClickable() {
         const projectTitle = card.querySelector('h4')?.textContent?.trim();
         if (!projectTitle) return;
         
+        // Add data attribute
+        card.setAttribute('data-project-id', projectTitle);
+        
         // Add cursor pointer
         card.style.cursor = 'pointer';
         card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
         
+        // Remove existing listeners by cloning
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+        
         // Add click event listener
-        card.addEventListener('click', function(e) {
+        newCard.addEventListener('click', function(e) {
             // Don't trigger if clicking on status badge
             if (e.target.closest('.project-status-badge')) return;
             
             const projectUrl = PROJECT_URL_MAP[projectTitle];
             if (projectUrl) {
+                // Add loading state
+                newCard.style.opacity = '0.7';
+                newCard.style.pointerEvents = 'none';
+                
+                console.log(`Navigating to: projects/${projectUrl}`);
                 window.location.href = `projects/${projectUrl}`;
             } else {
                 console.warn(`No URL mapping found for featured project: ${projectTitle}`);
@@ -106,36 +144,60 @@ function makeProjectCardsClickable() {
                     .replace(/\s+/g, '-')
                     .replace(/-+/g, '-')
                     + '.html';
+                
+                console.log(`Using fallback URL: projects/${fallbackUrl}`);
                 window.location.href = `projects/${fallbackUrl}`;
             }
         });
         
         // Add hover effect to featured cards
-        card.addEventListener('mouseenter', function() {
+        newCard.addEventListener('mouseenter', function() {
             this.style.transform = 'scale(1.05)';
             this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
         });
         
-        card.addEventListener('mouseleave', function() {
+        newCard.addEventListener('mouseleave', function() {
             this.style.transform = 'scale(1)';
             this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
         });
+        
+        // Add keyboard support
+        newCard.setAttribute('tabindex', '0');
+        newCard.setAttribute('role', 'button');
+        newCard.setAttribute('aria-label', `View details for ${projectTitle}`);
+        
+        newCard.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
     });
+    
+    console.log(`Made ${portfolioCards.length + featuredCards.length} project cards clickable`);
 }
 
 // Function to add visual indicators that cards are clickable
 function addClickableIndicators() {
+    // Check if CSS already added
+    if (document.querySelector('#clickable-indicators-css')) return;
+    
     const css = `
         .project-card-detailed {
             cursor: pointer;
             user-select: none;
+            position: relative;
+            overflow: hidden;
         }
         
         .project-card {
             cursor: pointer;
             user-select: none;
+            position: relative;
+            overflow: hidden;
         }
         
+        /* Clickable overlay effect */
         .project-card-detailed::after {
             content: '';
             position: absolute;
@@ -178,16 +240,115 @@ function addClickableIndicators() {
             transform: scale(0.98) !important;
         }
         
+        /* Focus styles for accessibility */
+        .project-card-detailed:focus,
+        .project-card:focus {
+            outline: 3px solid #007acc;
+            outline-offset: 2px;
+        }
+        
         /* Make sure status badges don't block clicks but remain clickable themselves */
         .project-status-badge {
             pointer-events: auto;
             z-index: 10;
         }
+        
+        /* Loading state */
+        .project-card-detailed.loading,
+        .project-card.loading {
+            opacity: 0.7 !important;
+            pointer-events: none;
+        }
+        
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            .project-card-detailed:hover::after,
+            .project-card:hover::after {
+                opacity: 0.5;
+            }
+        }
+        
+        /* Reduced motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .project-card-detailed,
+            .project-card {
+                transition: none !important;
+            }
+            
+            .project-card-detailed::after,
+            .project-card::after {
+                transition: none !important;
+            }
+        }
     `;
     
     const style = document.createElement('style');
+    style.id = 'clickable-indicators-css';
     style.textContent = css;
     document.head.appendChild(style);
+}
+
+// Function to debug project links
+function debugProjectLinks() {
+    console.log('=== PROJECT LINKS DEBUG ===');
+    
+    const portfolioCards = document.querySelectorAll('.project-card-detailed');
+    const featuredCards = document.querySelectorAll('.project-card');
+    
+    console.log(`Found ${portfolioCards.length} portfolio cards and ${featuredCards.length} featured cards`);
+    
+    portfolioCards.forEach((card, index) => {
+        const title = card.querySelector('h4')?.textContent?.trim();
+        const url = PROJECT_URL_MAP[title];
+        const isVisible = card.style.display !== 'none';
+        
+        console.log(`Portfolio Card ${index + 1}:`, {
+            title,
+            url: url || 'NO MAPPING',
+            visible: isVisible,
+            clickable: card.style.cursor === 'pointer'
+        });
+    });
+    
+    featuredCards.forEach((card, index) => {
+        const title = card.querySelector('h4')?.textContent?.trim();
+        const url = PROJECT_URL_MAP[title];
+        
+        console.log(`Featured Card ${index + 1}:`, {
+            title,
+            url: url || 'NO MAPPING',
+            clickable: card.style.cursor === 'pointer'
+        });
+    });
+    
+    console.log('=== END DEBUG ===');
+}
+
+// Function to validate all project URLs exist
+function validateProjectUrls() {
+    const missingUrls = [];
+    const allTitles = new Set();
+    
+    // Collect all project titles from the page
+    document.querySelectorAll('.project-card-detailed h4, .project-card h4').forEach(h4 => {
+        const title = h4.textContent?.trim();
+        if (title) allTitles.add(title);
+    });
+    
+    // Check if each title has a URL mapping
+    allTitles.forEach(title => {
+        if (!PROJECT_URL_MAP[title]) {
+            missingUrls.push(title);
+        }
+    });
+    
+    if (missingUrls.length > 0) {
+        console.warn('Missing URL mappings for projects:', missingUrls);
+        return false;
+    }
+    
+    console.log('All project titles have URL mappings!');
+    return true;
 }
 
 // Function to initialize clickable project cards
@@ -197,20 +358,28 @@ function initializeClickableProjectCards() {
     // Add CSS for clickable indicators
     addClickableIndicators();
     
+    // Function to setup cards with delay for DOM readiness
+    const setupCards = () => {
+        setTimeout(() => {
+            makeProjectCardsClickable();
+            validateProjectUrls();
+        }, 1000);
+    };
+    
     // Make cards clickable on page load
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(makeProjectCardsClickable, 1000);
-        });
+        document.addEventListener('DOMContentLoaded', setupCards);
     } else {
-        setTimeout(makeProjectCardsClickable, 1000);
+        setupCards();
     }
     
     // Re-run when portfolio section is shown
     document.addEventListener('click', function(e) {
         const link = e.target.closest('a');
         if (link && (link.getAttribute('href') === '#portfolio' || link.textContent.includes('Portfolio'))) {
-            setTimeout(makeProjectCardsClickable, 500);
+            setTimeout(() => {
+                makeProjectCardsClickable();
+            }, 500);
         }
     });
     
@@ -218,14 +387,22 @@ function initializeClickableProjectCards() {
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'childList' && mutation.target.id === 'featured-projects-scroll') {
-                setTimeout(makeProjectCardsClickable, 100);
+                setTimeout(() => {
+                    makeProjectCardsClickable();
+                }, 200);
             }
         });
     });
     
     const featuredContainer = document.getElementById('featured-projects-scroll');
     if (featuredContainer) {
-        observer.observe(featuredContainer, { childList: true });
+        observer.observe(featuredContainer, { childList: true, subtree: true });
+    }
+    
+    // Also observe portfolio sections for changes
+    const portfolioSection = document.querySelector('.portfolio-sections');
+    if (portfolioSection) {
+        observer.observe(portfolioSection, { childList: true, subtree: true });
     }
 }
 
@@ -233,16 +410,39 @@ function initializeClickableProjectCards() {
 window.ProjectClickHandler = {
     makeProjectCardsClickable,
     PROJECT_URL_MAP,
+    debugProjectLinks,
+    validateProjectUrls,
     
     // Utility function to update URL mapping
     updateProjectUrl: (projectTitle, url) => {
         PROJECT_URL_MAP[projectTitle] = url;
         console.log(`Updated URL for "${projectTitle}": ${url}`);
+        // Re-setup cards after URL update
+        setTimeout(makeProjectCardsClickable, 100);
     },
     
     // Function to refresh clickable cards
     refreshClickableCards: () => {
         makeProjectCardsClickable();
+    },
+    
+    // Function to get missing URL mappings
+    getMissingUrls: () => {
+        const missingUrls = [];
+        const allTitles = new Set();
+        
+        document.querySelectorAll('.project-card-detailed h4, .project-card h4').forEach(h4 => {
+            const title = h4.textContent?.trim();
+            if (title) allTitles.add(title);
+        });
+        
+        allTitles.forEach(title => {
+            if (!PROJECT_URL_MAP[title]) {
+                missingUrls.push(title);
+            }
+        });
+        
+        return missingUrls;
     }
 };
 
@@ -251,15 +451,23 @@ initializeClickableProjectCards();
 
 // Console helper
 console.log(`
-Project Click Handler loaded!
+🔗 Project Click Handler loaded!
 
 Features:
-- Click any project card to view details
-- Enhanced hover effects
-- Status badges remain clickable
-- Automatic URL mapping
+✅ Click any project card to view details
+✅ Enhanced hover effects  
+✅ Keyboard navigation support
+✅ Status badges remain clickable
+✅ Automatic URL mapping
+✅ Loading states
+✅ Accessibility support
 
-Commands:
+Debug Commands:
+- ProjectClickHandler.debugProjectLinks()
+- ProjectClickHandler.validateProjectUrls() 
+- ProjectClickHandler.getMissingUrls()
 - ProjectClickHandler.refreshClickableCards()
 - ProjectClickHandler.updateProjectUrl('Project Name', 'filename.html')
+
+${PROJECT_URL_MAP ? Object.keys(PROJECT_URL_MAP).length : 0} project URLs mapped.
 `);
