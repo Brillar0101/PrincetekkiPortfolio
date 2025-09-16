@@ -1,0 +1,258 @@
+/* 
+ * Section Toggle System - Reusable for all project pages
+ * Namespace: st- (section-toggle)
+ * Usage: Add data-section="name" to any section element
+ */
+
+/* Toggle Panel Styles */
+.st-panel {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.st-panel[hidden] {
+    display: none !important;
+}
+
+.st-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.st-panel__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.st-panel__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #666;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.st-panel__close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+.st-panel__close:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.st-panel__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.st-panel__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.st-panel__control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+}
+
+.st-panel__checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+.st-panel__label {
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    flex: 1;
+}
+
+.st-panel__reset {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.st-panel__reset:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.st-panel__reset:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.st-panel__reset:active {
+    transform: translateY(0);
+}
+
+/* Section visibility states */
+[data-section][aria-hidden="true"] {
+    display: none !important;
+}
+
+[data-section][hidden] {
+    display: none !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .st-panel {
+        background: rgba(30, 30, 30, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    
+    .st-panel__title,
+    .st-panel__label {
+        color: #fff;
+    }
+    
+    .st-panel__header {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .st-panel__close {
+        color: #ccc;
+    }
+    
+    .st-panel__close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .st-panel {
+        right: 10px;
+        min-width: 180px;
+        font-size: 13px;
+    }
+    
+    .st-panel__title {
+        font-size: 15px;
+    }
+    
+    .st-panel__reset {
+        font-size: 13px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .st-panel,
+    .st-panel__close,
+    .st-panel__reset {
+        transition: none;
+    }
+    
+    .st-panel__reset:hover {
+        transform: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .st-panel {
+        border-width: 2px;
+        border-color: #000;
+    }
+    
+    .st-panel__close:focus,
+    .st-panel__reset:focus {
+        outline-width: 3px;
+    }
+}
+
+/* Animation for panel appearance */
+.st-panel.st-panel--entering {
+    animation: st-panel-enter 0.3s ease-out;
+}
+
+.st-panel.st-panel--leaving {
+    animation: st-panel-leave 0.3s ease-in;
+}
+
+@keyframes st-panel-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+@keyframes st-panel-leave {
+    from {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50%) translateX(20px);
+    }
+}
+
+/* Hotkey indicator (optional) */
+.st-panel__hotkey-hint {
+    font-size: 11px;
+    color: #999;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Focus trap for accessibility */
+.st-panel.st-panel--focus-trapped {
+    isolation: isolate;
+}
+
+/* Ensure panel is above everything */
+.st-panel {
+    position: fixed !important;
+    z-index: 2147483647 !important; /* Maximum z-index value */
+}

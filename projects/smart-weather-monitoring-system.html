@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Weather Monitoring System - Real-time Climate Insights</title>
+    <meta name="description" content="ESP32-based weather monitoring system with cloud connectivity, featuring temperature, humidity, and pressure sensors with real-time data visualization and MQTT integration.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Smart Weather Monitoring System - Real-time Climate Insights">
+    <meta property="og:description" content="ESP32-based weather monitoring system with cloud connectivity, featuring temperature, humidity, and pressure sensors with real-time data visualization.">
+    <meta property="og:image" content="../images/projects/iot-weather-station.jpg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Smart Weather Monitoring System - Real-time Climate Insights">
+    <meta name="twitter:description" content="ESP32-based weather monitoring system with cloud connectivity, featuring temperature, humidity, and pressure sensors with real-time data visualization.">
+    <meta name="twitter:image" content="../images/projects/iot-weather-station.jpg">
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    
+    <!-- Project-specific CSS -->
+    <link rel="stylesheet" href="../css/project-base.css">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="../images/projects/iot-weather-station.jpg" as="image">
+    
+    <!-- Critical inline styles for first paint -->
+    <style>
+        :root {
+            --project-primary: #4a90e2;
+            --project-secondary: #357abd;
+            --project-accent: #ffa726;
+        }
+        
+        .project-hero__overlay {
+            opacity: 0.3;
+        }
+        
+        /* Prevent FOUC */
+        .project-hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--project-primary) 0%, var(--project-secondary) 100%);
+        }
+    </style>
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Smart Weather Monitoring System",
+        "description": "ESP32-based weather monitoring system with cloud connectivity, featuring temperature, humidity, and pressure sensors with real-time data visualization.",
+        "programmingLanguage": ["C++", "JavaScript", "Python"],
+        "codeRepository": "https://github.com/USERNAME/smart-weather-monitoring-system",
+        "author": {
+            "@type": "Person",
+            "name": "Electronics Engineer"
+        },
+        "dateCreated": "2024",
+        "keywords": ["ESP32", "IoT", "Weather Station", "MQTT", "Cloud Computing", "Sensors"]
+    }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">EE Portfolio</div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#portfolio">My Portfolio</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="project-hero">
+            <video 
+                class="project-hero__video" 
+                poster="../images/projects/iot-weather-station.jpg"
+                playsinline 
+                muted 
+                autoplay 
+                loop
+                aria-label="Weather monitoring system demonstration video"
+            >
+                <source src="../assets/videos/weather-hero.mp4" type="video/mp4">
+                <!-- Fallback for browsers that don't support video -->
+                <img src="../images/projects/iot-weather-station.jpg" alt="Smart Weather Monitoring System">
+            </video>
+            
+            <div class="project-hero__overlay" aria-hidden="true"></div>
+            
+            <div class="project-hero__content">
+                <h1 class="project-hero__title">Smart Weather Monitoring System</h1>
+                <p class="project-hero__tagline">Real-time climate insights with on-device sensing & cloud analytics</p>
+                
+                <a 
+                    href="https://github.com/USERNAME/smart-weather-monitoring-system" 
+                    target="_blank" 
+                    rel="noopener"
+                    class="project-hero__cta"
+                    aria-label="View source code on GitHub"
+                >
+                    <svg class="project-hero__cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Find the code on GitHub
+                </a>
+            </div>
+        </section>
+
+        <!-- Project Blurb Section -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <div class="project-blurb__content">
+                    <p class="project-blurb__intro">
+                        This ESP32-based weather monitoring system combines precision environmental sensing with robust cloud connectivity to deliver real-time climate insights. The system continuously monitors temperature, humidity, and barometric pressure using high-accuracy sensors, transmitting data through MQTT protocol for reliable cloud analytics and visualization.
+                    </p>
+                    
+                    <p class="project-blurb__details">
+                        Built with power-aware firmware and over-the-air update capabilities, the system maintains 24/7 operation while supporting remote configuration and maintenance. The cloud dashboard provides historical data analysis, trend visualization, and customizable alerts, making it ideal for agricultural monitoring, facility management, or personal weather tracking applications.
+                    </p>
+                    
+                    <!-- Technical Specifications -->
+                    <div class="project-blurb__specs">
+                        <h3 class="project-blurb__specs-title">Technical Specifications</h3>
+                        <ul class="project-blurb__specs-list">
+                            <li class="project-blurb__spec">
+                                <svg class="project-blurb__spec-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <strong>Sensors:</strong> BME280 (Temperature, Humidity, Pressure), DS18B20 (Precision Temperature)
+                            </li>
+                            <li class="project-blurb__spec">
+                                <svg class="project-blurb__spec-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.07 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+                                </svg>
+                                <strong>Connectivity:</strong> Wi-Fi, MQTT over TLS, RESTful API
+                            </li>
+                            <li class="project-blurb__spec">
+                                <svg class="project-blurb__spec-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33V9h4.93L13 7v2h4V5.33C17 4.6 16.4 4 15.67 4z"/>
+                                    <path d="M13 12.5h2L11 20v-5.5H9L12.5 8V12.5z"/>
+                                </svg>
+                                <strong>Power:</strong> Solar-compatible, Deep Sleep Mode, Battery Monitoring
+                            </li>
+                            <li class="project-blurb__spec">
+                                <svg class="project-blurb__spec-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+                                </svg>
+                                <strong>Firmware:</strong> FreeRTOS, OTA Updates, Watchdog Timer, Error Recovery
+                            </li>
+                            <li class="project-blurb__spec">
+                                <svg class="project-blurb__spec-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                                </svg>
+                                <strong>Cloud:</strong> AWS IoT Core, DynamoDB, CloudWatch, Custom Dashboard
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Demo Section -->
+        <section class="project-section project-demo">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Project Demo</h2>
+                <div class="project-demo__wrapper">
+                    <div class="project-demo__frame">
+                        <!-- Placeholder content before lazy loading -->
+                        <div class="project-demo__placeholder">
+                            <svg class="project-demo__placeholder-icon" width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M23 7l-7 5 7 5V7z"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            <p class="project-demo__placeholder-text">Demo video will load here</p>
+                            <button class="project-demo__load-button" type="button" aria-label="Load demo video">
+                                Load Demo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Accessibility toggle -->
+                    <button 
+                        class="project-demo__transcript-toggle" 
+                        type="button" 
+                        aria-expanded="false"
+                        aria-controls="project-demo-transcript"
+                    >
+                        Show Transcript
+                    </button>
+                    
+                    <div class="project-demo__transcript" id="project-demo-transcript" hidden>
+                        <h3>Video Transcript</h3>
+                        <p>This demonstration shows the Smart Weather Monitoring System in operation, displaying real-time sensor readings and cloud dashboard functionality. The system continuously monitors environmental conditions and provides data visualization through the web interface.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schematics Section -->
+        <section class="project-section project-schematics">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Circuit Schematics</h2>
+                <p class="project-schematics__description">
+                    Detailed circuit diagrams and PCB layouts for the Smart Weather Monitoring System. Use the tabs below to navigate between different schematic versions and circuit sections.
+                </p>
+                
+                <!-- Schematic Navigation Tabs -->
+                <div class="project-schematics__tabs">
+                    <button class="project-schematic__tab active" data-schematic="v1" type="button">
+                        V1 - Main Circuit
+                    </button>
+                    <button class="project-schematic__tab" data-schematic="v2" type="button">
+                        V2 - Sensor Interface
+                    </button>
+                    <button class="project-schematic__tab" data-schematic="v3" type="button">
+                        V3 - Power Management
+                    </button>
+                    <button class="project-schematic__tab" data-schematic="v4" type="button">
+                        V4 - PCB Layout
+                    </button>
+                </div>
+
+                <!-- Schematic Viewer Container -->
+                <div class="project-schematics__viewer">
+                    <!-- V1 - Main Circuit -->
+                    <div class="project-schematic__panel active" id="schematic-v1">
+                        <div class="project-schematic__header">
+                            <h3>V1 - Main Controller Circuit</h3>
+                            <p>ESP32 microcontroller circuit with power regulation and programming interface</p>
+                        </div>
+                        <div class="project-schematic__image-container">
+                            <img 
+                                src="../assets/schematics/weather-main-controller-v1.jpg" 
+                                alt="Smart Weather Monitoring System - Main Controller Circuit V1"
+                                class="project-schematic__image"
+                                loading="lazy"
+                            />
+                            <!-- Fallback for missing image -->
+                            <div class="project-schematic__placeholder" style="display: none;">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                <p>Schematic image not available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V2 - Sensor Interface -->
+                    <div class="project-schematic__panel" id="schematic-v2">
+                        <div class="project-schematic__header">
+                            <h3>V2 - Sensor Interface Board</h3>
+                            <p>BME280 and DS18B20 sensor connections with signal conditioning circuitry</p>
+                        </div>
+                        <div class="project-schematic__image-container">
+                            <img 
+                                src="../assets/schematics/weather-sensor-interface-v2.jpg" 
+                                alt="Smart Weather Monitoring System - Sensor Interface Circuit V2"
+                                class="project-schematic__image"
+                                loading="lazy"
+                            />
+                            <div class="project-schematic__placeholder" style="display: none;">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                <p>Schematic image not available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V3 - Power Management -->
+                    <div class="project-schematic__panel" id="schematic-v3">
+                        <div class="project-schematic__header">
+                            <h3>V3 - Power Management System</h3>
+                            <p>Solar charging circuit with battery management and low-power design optimization</p>
+                        </div>
+                        <div class="project-schematic__image-container">
+                            <img 
+                                src="../assets/schematics/weather-power-management-v3.jpg" 
+                                alt="Smart Weather Monitoring System - Power Management Circuit V3"
+                                class="project-schematic__image"
+                                loading="lazy"
+                            />
+                            <div class="project-schematic__placeholder" style="display: none;">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                <p>Schematic image not available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V4 - PCB Layout -->
+                    <div class="project-schematic__panel" id="schematic-v4">
+                        <div class="project-schematic__header">
+                            <h3>V4 - PCB Layout & Assembly</h3>
+                            <p>Complete PCB layout with component placement and routing optimization</p>
+                        </div>
+                        <div class="project-schematic__image-container">
+                            <img 
+                                src="../assets/schematics/weather-pcb-layout-v4.jpg" 
+                                alt="Smart Weather Monitoring System - PCB Layout V4"
+                                class="project-schematic__image"
+                                loading="lazy"
+                            />
+                            <div class="project-schematic__placeholder" style="display: none;">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                <p>Schematic image not available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Zoom Controls -->
+                <div class="project-schematics__controls">
+                    <button class="project-schematic__zoom-btn" data-action="zoom-in" type="button" title="Zoom In">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                            <line x1="11" y1="8" x2="11" y2="14"/>
+                            <line x1="8" y1="11" x2="14" y2="11"/>
+                        </svg>
+                        Zoom In
+                    </button>
+                    <button class="project-schematic__zoom-btn" data-action="zoom-out" type="button" title="Zoom Out">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                            <line x1="8" y1="11" x2="14" y2="11"/>
+                        </svg>
+                        Zoom Out
+                    </button>
+                    <button class="project-schematic__zoom-btn" data-action="zoom-reset" type="button" title="Reset Zoom">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        Reset
+                    </button>
+                    <button class="project-schematic__fullscreen-btn" type="button" title="Fullscreen View">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3h6v2H5v4H3V3zm12 0h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zm18 0v6h-6v-2h4v-4h2z"/>
+                        </svg>
+                        Fullscreen
+                    </button>
+                </div>
+                
+                <div class="project-schematics__note">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <p>High-resolution schematic diagrams. Click and drag to pan, use controls to zoom. All schematics are provided for educational purposes.</p>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            /* Schematic Section Styles */
+            .project-schematics__tabs {
+                display: flex;
+                gap: 0;
+                margin-bottom: 2rem;
+                border-bottom: 2px solid var(--project-border);
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .project-schematic__tab {
+                background: transparent;
+                border: none;
+                padding: 1rem 2rem;
+                cursor: pointer;
+                font-weight: 500;
+                color: var(--project-text-muted);
+                transition: all var(--project-transition-fast);
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            .project-schematic__tab:hover {
+                color: var(--project-primary);
+                background: rgba(var(--project-primary-rgb, 74, 144, 226), 0.05);
+            }
+            
+            .project-schematic__tab.active {
+                color: var(--project-primary);
+                border-bottom-color: var(--project-primary);
+                background: rgba(var(--project-primary-rgb, 74, 144, 226), 0.1);
+            }
+            
+            .project-schematics__viewer {
+                position: relative;
+                min-height: 600px;
+                background: var(--project-surface);
+                border-radius: var(--project-border-radius);
+                overflow: hidden;
+                box-shadow: 0 10px 30px var(--project-shadow);
+            }
+            
+            .project-schematic__panel {
+                display: none;
+                width: 100%;
+                height: 100%;
+            }
+            
+            .project-schematic__panel.active {
+                display: block;
+            }
+            
+            .project-schematic__header {
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid var(--project-border);
+                background: var(--project-bg-alt);
+            }
+            
+            .project-schematic__header h3 {
+                margin: 0 0 0.5rem 0;
+                color: var(--project-text);
+                font-size: 1.5rem;
+            }
+            
+            .project-schematic__header p {
+                margin: 0;
+                color: var(--project-text-muted);
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+            
+            .project-schematic__image-container {
+                position: relative;
+                width: 100%;
+                min-height: 500px;
+                overflow: auto;
+                background: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .project-schematic__image {
+                max-width: none;
+                width: auto;
+                height: auto;
+                cursor: grab;
+                transition: transform var(--project-transition-fast);
+                display: block;
+            }
+            
+            .project-schematic__image:active {
+                cursor: grabbing;
+            }
+            
+            .project-schematic__placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: var(--project-text-muted);
+                text-align: center;
+                padding: 2rem;
+            }
+            
+            .project-schematic__placeholder svg {
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+            
+            .project-schematics__controls {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .project-schematic__zoom-btn,
+            .project-schematic__fullscreen-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: var(--project-surface);
+                border: 1px solid var(--project-border);
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                cursor: pointer;
+                color: var(--project-text);
+                font-size: 0.9rem;
+                transition: all var(--project-transition-fast);
+            }
+            
+            .project-schematic__zoom-btn:hover,
+            .project-schematic__fullscreen-btn:hover {
+                background: var(--project-primary);
+                color: white;
+                border-color: var(--project-primary);
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .project-schematic__tab {
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9rem;
+                }
+                
+                .project-schematic__header {
+                    padding: 1rem 1.5rem;
+                }
+                
+                .project-schematic__header h3 {
+                    font-size: 1.3rem;
+                }
+                
+                .project-schematics__controls {
+                    gap: 0.5rem;
+                }
+                
+                .project-schematic__zoom-btn,
+                .project-schematic__fullscreen-btn {
+                    padding: 0.4rem 0.8rem;
+                    font-size: 0.8rem;
+                }
+            }
+        </style>
+
+        <script>
+            // Schematic Tab Functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const tabs = document.querySelectorAll('.project-schematic__tab');
+                const panels = document.querySelectorAll('.project-schematic__panel');
+                const zoomBtns = document.querySelectorAll('.project-schematic__zoom-btn');
+                const fullscreenBtn = document.querySelector('.project-schematic__fullscreen-btn');
+                
+                let currentZoom = 1;
+                let isDragging = false;
+                let startX, startY, scrollLeft, scrollTop;
+                
+                // Tab switching functionality
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        const targetSchematic = this.getAttribute('data-schematic');
+                        
+                        // Remove active class from all tabs and panels
+                        tabs.forEach(t => t.classList.remove('active'));
+                        panels.forEach(p => p.classList.remove('active'));
+                        
+                        // Add active class to clicked tab and corresponding panel
+                        this.classList.add('active');
+                        document.getElementById(`schematic-${targetSchematic}`).classList.add('active');
+                        
+                        // Reset zoom when switching tabs
+                        currentZoom = 1;
+                        const activeImage = document.querySelector('.project-schematic__panel.active .project-schematic__image');
+                        if (activeImage) {
+                            activeImage.style.transform = `scale(${currentZoom})`;
+                        }
+                    });
+                });
+                
+                // Zoom functionality
+                zoomBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const action = this.getAttribute('data-action');
+                        const activeImage = document.querySelector('.project-schematic__panel.active .project-schematic__image');
+                        
+                        if (!activeImage) return;
+                        
+                        switch(action) {
+                            case 'zoom-in':
+                                currentZoom = Math.min(currentZoom * 1.25, 3);
+                                break;
+                            case 'zoom-out':
+                                currentZoom = Math.max(currentZoom * 0.8, 0.5);
+                                break;
+                            case 'zoom-reset':
+                                currentZoom = 1;
+                                break;
+                        }
+                        
+                        activeImage.style.transform = `scale(${currentZoom})`;
+                    });
+                });
+                
+                // Image dragging functionality
+                document.addEventListener('mousedown', function(e) {
+                    if (e.target.classList.contains('project-schematic__image')) {
+                        isDragging = true;
+                        const container = e.target.closest('.project-schematic__image-container');
+                        startX = e.pageX - container.offsetLeft;
+                        startY = e.pageY - container.offsetTop;
+                        scrollLeft = container.scrollLeft;
+                        scrollTop = container.scrollTop;
+                        e.target.style.cursor = 'grabbing';
+                    }
+                });
+                
+                document.addEventListener('mouseleave', function() {
+                    isDragging = false;
+                    const images = document.querySelectorAll('.project-schematic__image');
+                    images.forEach(img => img.style.cursor = 'grab');
+                });
+                
+                document.addEventListener('mouseup', function() {
+                    isDragging = false;
+                    const images = document.querySelectorAll('.project-schematic__image');
+                    images.forEach(img => img.style.cursor = 'grab');
+                });
+                
+                document.addEventListener('mousemove', function(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const activeContainer = document.querySelector('.project-schematic__panel.active .project-schematic__image-container');
+                    if (!activeContainer) return;
+                    
+                    const x = e.pageX - activeContainer.offsetLeft;
+                    const y = e.pageY - activeContainer.offsetTop;
+                    const walkX = (x - startX) * 2;
+                    const walkY = (y - startY) * 2;
+                    activeContainer.scrollLeft = scrollLeft - walkX;
+                    activeContainer.scrollTop = scrollTop - walkY;
+                });
+                
+                // Fullscreen functionality
+                if (fullscreenBtn) {
+                    fullscreenBtn.addEventListener('click', function() {
+                        const activePanel = document.querySelector('.project-schematic__panel.active');
+                        if (!activePanel) return;
+                        
+                        if (activePanel.requestFullscreen) {
+                            activePanel.requestFullscreen();
+                        } else if (activePanel.webkitRequestFullscreen) {
+                            activePanel.webkitRequestFullscreen();
+                        } else if (activePanel.msRequestFullscreen) {
+                            activePanel.msRequestFullscreen();
+                        }
+                    });
+                }
+                
+                // Handle image loading errors
+                const images = document.querySelectorAll('.project-schematic__image');
+                images.forEach(img => {
+                    img.addEventListener('error', function() {
+                        this.style.display = 'none';
+                        const placeholder = this.closest('.project-schematic__image-container').querySelector('.project-schematic__placeholder');
+                        if (placeholder) {
+                            placeholder.style.display = 'flex';
+                        }
+                    });
+                });
+            });
+        </script>
+    </main>
+
+    <!-- Footer -->
+    <footer class="project-footer">
+        <div class="project-footer__container">
+            <div class="project-footer__content">
+                <p class="project-footer__copyright">
+                    &copy; 2024 Electronics Engineer Portfolio. All rights reserved.
+                </p>
+                <div class="project-footer__links">
+                    <a href="../index.html" class="project-footer__link">Home</a>
+                    <a href="../index.html#portfolio" class="project-footer__link">Portfolio</a>
+                    <a href="../index.html#contact" class="project-footer__link">Contact</a>
+                </div>
+                <div class="project-footer__social">
+                    <a href="https://github.com/USERNAME" class="project-footer__social-link" aria-label="GitHub Profile" target="_blank" rel="noopener">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/yourprofile" class="project-footer__social-link" aria-label="LinkedIn Profile" target="_blank" rel="noopener">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/project-base.js" defer></script>
+</body>
+</html>

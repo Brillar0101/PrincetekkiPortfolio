@@ -7,8 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the website
     initializeWebsite();
     
-    // Populate featured projects
-    populateFeaturedProjects();
+    // Initialize project visibility first, then populate featured projects
+    if (window.ProjectVisibilityManager) {
+        setTimeout(() => {
+            window.ProjectVisibilityManager.manageProjectVisibility();
+            populateFeaturedProjects();
+        }, 500);
+    } else {
+        populateFeaturedProjects();
+    }
     
     // Add scroll effects
     addScrollEffects();
@@ -29,7 +36,7 @@ function initializeWebsite() {
     addProjectScrollControls();
 }
 
-// Function to extract project data from portfolio sections
+// Function to extract project data from portfolio sections (updated to respect visibility)
 function extractProjectsFromSections() {
     const projects = {
         embedded: [],
@@ -43,10 +50,19 @@ function extractProjectsFromSections() {
     if (embeddedSection) {
         const embeddedCards = embeddedSection.querySelectorAll('.project-card-detailed');
         embeddedCards.forEach(card => {
-            const image = card.querySelector('.project-image').textContent;
-            const title = card.querySelector('h4').textContent;
-            const description = card.querySelector('p').textContent;
-            projects.embedded.push({ image, title, description });
+            // Skip hidden projects
+            if (card.style.display === 'none') return;
+            
+            const imageElement = card.querySelector('.project-image .project-title');
+            const titleElement = card.querySelector('h4');
+            const descriptionElement = card.querySelector('p');
+            
+            if (imageElement && titleElement && descriptionElement) {
+                const image = imageElement.textContent;
+                const title = titleElement.textContent;
+                const description = descriptionElement.textContent;
+                projects.embedded.push({ image, title, description });
+            }
         });
     }
 
@@ -55,10 +71,19 @@ function extractProjectsFromSections() {
     if (gamingSection) {
         const gamingCards = gamingSection.querySelectorAll('.project-card-detailed');
         gamingCards.forEach(card => {
-            const image = card.querySelector('.project-image').textContent;
-            const title = card.querySelector('h4').textContent;
-            const description = card.querySelector('p').textContent;
-            projects.gaming.push({ image, title, description });
+            // Skip hidden projects
+            if (card.style.display === 'none') return;
+            
+            const imageElement = card.querySelector('.project-image .project-title');
+            const titleElement = card.querySelector('h4');
+            const descriptionElement = card.querySelector('p');
+            
+            if (imageElement && titleElement && descriptionElement) {
+                const image = imageElement.textContent;
+                const title = titleElement.textContent;
+                const description = descriptionElement.textContent;
+                projects.gaming.push({ image, title, description });
+            }
         });
     }
 
@@ -67,10 +92,19 @@ function extractProjectsFromSections() {
     if (pcbSection) {
         const pcbCards = pcbSection.querySelectorAll('.project-card-detailed');
         pcbCards.forEach(card => {
-            const image = card.querySelector('.project-image').textContent;
-            const title = card.querySelector('h4').textContent;
-            const description = card.querySelector('p').textContent;
-            projects.pcb.push({ image, title, description });
+            // Skip hidden projects
+            if (card.style.display === 'none') return;
+            
+            const imageElement = card.querySelector('.project-image .project-title');
+            const titleElement = card.querySelector('h4');
+            const descriptionElement = card.querySelector('p');
+            
+            if (imageElement && titleElement && descriptionElement) {
+                const image = imageElement.textContent;
+                const title = titleElement.textContent;
+                const description = descriptionElement.textContent;
+                projects.pcb.push({ image, title, description });
+            }
         });
     }
 
@@ -79,10 +113,19 @@ function extractProjectsFromSections() {
     if (visionSection) {
         const visionCards = visionSection.querySelectorAll('.project-card-detailed');
         visionCards.forEach(card => {
-            const image = card.querySelector('.project-image').textContent;
-            const title = card.querySelector('h4').textContent;
-            const description = card.querySelector('p').textContent;
-            projects.vision.push({ image, title, description });
+            // Skip hidden projects
+            if (card.style.display === 'none') return;
+            
+            const imageElement = card.querySelector('.project-image .project-title');
+            const titleElement = card.querySelector('h4');
+            const descriptionElement = card.querySelector('p');
+            
+            if (imageElement && titleElement && descriptionElement) {
+                const image = imageElement.textContent;
+                const title = titleElement.textContent;
+                const description = descriptionElement.textContent;
+                projects.vision.push({ image, title, description });
+            }
         });
     }
 
@@ -96,7 +139,7 @@ function getRandomProject(projectArray) {
     return projectArray[randomIndex];
 }
 
-// Function to generate featured projects
+// Function to generate featured projects (only visible ones)
 function generateFeaturedProjects() {
     const allProjects = extractProjectsFromSections();
     const featuredProjects = [];
@@ -148,18 +191,51 @@ function populateFeaturedProjects() {
     // Clear existing content
     featuredProjectsContainer.innerHTML = '';
 
+    // If no visible projects, show a message
+    if (featuredProjects.length === 0) {
+        const noProjectsMsg = document.createElement('div');
+        noProjectsMsg.className = 'no-projects-message';
+        noProjectsMsg.style.cssText = `
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        `;
+        noProjectsMsg.innerHTML = '<p>Featured projects will appear here as they become available.</p>';
+        featuredProjectsContainer.appendChild(noProjectsMsg);
+        return;
+    }
+
     // Create project cards
     featuredProjects.forEach(project => {
         const projectCard = createProjectCard(project);
         featuredProjectsContainer.appendChild(projectCard);
     });
 
-    // Duplicate projects for smooth scrolling effect
+    // Duplicate projects for smooth scrolling effect only if we have projects
     if (featuredProjects.length > 0) {
         featuredProjects.forEach(project => {
             const projectCard = createProjectCard(project);
             featuredProjectsContainer.appendChild(projectCard);
         });
+    }
+    
+    // Add status badges to featured projects after they're created
+    if (window.ProjectStatusManager) {
+        setTimeout(() => {
+            window.ProjectStatusManager.addStatusBadgesToFeaturedProjects();
+        }, 100);
+    }
+    
+    // Make featured cards clickable after they're created
+    if (window.ProjectClickHandler) {
+        setTimeout(() => {
+            window.ProjectClickHandler.makeProjectCardsClickable();
+        }, 200);
     }
 }
 
@@ -169,9 +245,9 @@ function createProjectCard(project) {
     projectCard.className = 'project-card';
     
     // Truncate description for featured view
-    const shortDescription = project.description.length > 80 
+    const shortDescription = project.description && project.description.length > 80 
         ? project.description.substring(0, 80) + '...' 
-        : project.description;
+        : project.description || 'Project description coming soon...';
 
     // Create image path from project title
     const imagePath = project.image ? 
@@ -238,9 +314,12 @@ function addScrollEffects() {
         });
     }, observerOptions);
 
-    // Observe cards for animation
+    // Observe cards for animation (updated to skip hidden cards)
     const cards = document.querySelectorAll('.expertise-card, .project-card-detailed, .contact-card');
     cards.forEach(card => {
+        // Skip hidden cards
+        if (card.style.display === 'none') return;
+        
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
@@ -306,9 +385,66 @@ function debounce(func, wait) {
 
 // Handle window resize events
 window.addEventListener('resize', debounce(function() {
-    // Recalculate layouts on resize
+    // Recalculate layouts on resize and refresh project visibility
+    if (window.ProjectVisibilityManager) {
+        window.ProjectVisibilityManager.manageProjectVisibility();
+    }
     populateFeaturedProjects();
+    
+    // Refresh status badges after resize
+    if (window.ProjectStatusManager) {
+        setTimeout(() => {
+            window.ProjectStatusManager.refreshAllBadges();
+        }, 300);
+    }
+    
+    // Refresh clickable cards after resize
+    if (window.ProjectClickHandler) {
+        setTimeout(() => {
+            window.ProjectClickHandler.refreshClickableCards();
+        }, 400);
+    }
 }, 250));
+
+// Integration with project visibility manager
+window.addEventListener('load', function() {
+    if (window.ProjectVisibilityManager) {
+        setTimeout(() => {
+            window.ProjectVisibilityManager.manageProjectVisibility();
+            populateFeaturedProjects();
+            
+            // Add status badges after everything is loaded
+            if (window.ProjectStatusManager) {
+                setTimeout(() => {
+                    window.ProjectStatusManager.addStatusBadgesToProjects();
+                    window.ProjectStatusManager.addStatusBadgesToFeaturedProjects();
+                }, 500);
+            }
+            
+            // Make cards clickable after everything is loaded
+            if (window.ProjectClickHandler) {
+                setTimeout(() => {
+                    window.ProjectClickHandler.makeProjectCardsClickable();
+                }, 600);
+            }
+        }, 1000);
+    }
+});
+
+// Add navigation event listener to refresh everything when switching to portfolio
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link && (link.getAttribute('href') === '#portfolio' || link.textContent.includes('Portfolio'))) {
+        setTimeout(() => {
+            if (window.ProjectStatusManager) {
+                window.ProjectStatusManager.addStatusBadgesToProjects();
+            }
+            if (window.ProjectClickHandler) {
+                window.ProjectClickHandler.makeProjectCardsClickable();
+            }
+        }, 300);
+    }
+});
 
 // Add ripple effect CSS dynamically
 const rippleCSS = `
@@ -326,6 +462,15 @@ const rippleCSS = `
             transform: scale(4);
             opacity: 0;
         }
+    }
+    
+    .no-projects-message {
+        animation: fade-in 0.5s ease-in-out;
+    }
+    
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 `;
 
@@ -353,5 +498,25 @@ window.PortfolioUtils = {
     extractProjectsFromSections,
     generateFeaturedProjects,
     populateFeaturedProjects,
-    debounce
+    debounce,
+    // Add project management functions
+    refreshProjectVisibility: function() {
+        if (window.ProjectVisibilityManager) {
+            window.ProjectVisibilityManager.manageProjectVisibility();
+            populateFeaturedProjects();
+        }
+        
+        // Also refresh status badges and click handlers
+        if (window.ProjectStatusManager) {
+            setTimeout(() => {
+                window.ProjectStatusManager.refreshAllBadges();
+            }, 200);
+        }
+        
+        if (window.ProjectClickHandler) {
+            setTimeout(() => {
+                window.ProjectClickHandler.refreshClickableCards();
+            }, 300);
+        }
+    }
 };
