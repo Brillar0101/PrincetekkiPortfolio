@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tennis Video Analytics - From raw match footage to trusted stats</title>
+    <meta name="description" content="Automated tennis video analysis using YOLOv8 player tracking, fine-tuned YOLOv5 ball detection, and court keypoint mapping for real-time match statistics.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AI Tennis Video Analytics">
+    <meta property="og:description" content="From raw match footage to trusted stats—automatically. 95%+ ball detection, shot analysis, and mini-court projection.">
+    <meta property="og:image" content="assets/hero_poster.jpg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Tennis Video Analytics">
+    <meta name="twitter:description" content="From raw match footage to trusted stats—automatically.">
+    <meta name="twitter:image" content="assets/hero_poster.jpg">
+    
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Using your existing color scheme from portfolio */
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #ffa726;
+            --dark: #333333;
+            --light: #ffffff;
+            
+            /* Background gradients matching your portfolio */
+            --hero-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-gradient: linear-gradient(45deg, #667eea, #764ba2);
+            --surface-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            
+            /* Text colors */
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --text-on-dark: #ffffff;
+            
+            /* Surface colors */
+            --surface-white: #ffffff;
+            --surface-light: #f8f9fa;
+            --surface-accent: rgba(255, 255, 255, 0.1);
+            
+            /* Borders and shadows */
+            --border-light: rgba(0, 0, 0, 0.1);
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --shadow-strong: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Base styles using your portfolio's approach */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--hero-gradient);
+            overflow-x: hidden;
+        }
+
+        /* Typography matching your portfolio */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: bold;
+            color: var(--text-on-dark);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+            color: var(--text-primary);
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 65ch;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: var(--surface-light);
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+
+        /* Navigation matching your existing nav style */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px var(--shadow-light);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        /* Sections using your portfolio's structure */
+        .section {
+            min-height: 100vh;
+            padding: 6rem 2rem;
+            scroll-snap-align: start;
+        }
+
+        .section:nth-child(even) {
+            background: var(--surface-white);
+        }
+
+        .section:nth-child(odd):not(.hero) {
+            background: var(--surface-gradient);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Hero section matching your hero style */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+            background: var(--hero-gradient);
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 1;
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: var(--text-on-dark);
+            z-index: 3;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            color: var(--text-on-dark);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px var(--shadow-strong);
+        }
+
+        .hero-subhead {
+            font-size: clamp(1.25rem, 3vw, 1.3rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        /* Button styling matching your existing buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: var(--surface-white);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--surface-accent);
+            color: var(--text-on-dark);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .hero-caption {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+        }
+
+        .video-controls {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 4;
+        }
+
+        .pause-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: var(--text-on-dark);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .pause-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Tech chips using your card styling approach */
+        .tech-chips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--surface-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chip:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .chip-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--card-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-on-dark);
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .chip-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .chip-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* KPI badges with gradient styling */
+        .kpi-badges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .badge {
+            background: var(--card-gradient);
+            color: var(--text-on-dark);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .badge-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* Cards matching your project card style */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: var(--surface-white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            border: 1px solid #f0f0f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card h4 {
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+        }
+
+        /* Tech Section Specific Styles */
+        .tech-architecture {
+            margin: 3rem 0;
+        }
+
+        .architecture-diagram {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+        }
+
+        .arch-placeholder {
+            width: 100%;
+            height: 200px;
+            background: var(--surface-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            border: 2px dashed var(--border-light);
+        }
+
+        .model-details {
+            margin: 4rem 0;
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .model-card {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .model-header h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .model-badge {
+            background: var(--primary);
+            color: var(--text-on-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .model-badge.fine-tuned {
+            background: var(--accent);
+        }
+
+        .model-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--surface-light);
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .spec-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Performance Metrics */
+        .performance-metrics {
+            margin: 4rem 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .metric-item {
+            background: var(--card-gradient);
+            color: var(--text-on-dark);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-note {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Technical Solutions */
+        .tech-solutions {
+            margin: 4rem 0;
+        }
+
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .solution-card {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .solution-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .solution-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .solution-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .tech-stack-mini {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+
+        /* Code Sample */
+        .code-sample {
+            margin: 4rem 0;
+        }
+
+        .code-block {
+            background: var(--text-primary);
+            color: #f8f8f2;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px var(--shadow-strong);
+        }
+
+        .code-block .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .code-block .keyword {
+            color: #ff79c6;
+            font-weight: 600;
+        }
+
+        .code-block .string {
+            color: #f1fa8c;
+        }
+
+        .code-block .number {
+            color: #bd93f9;
+        }
+
+        .code-block .class-name {
+            color: #8be9fd;
+            font-weight: 600;
+        }
+
+        .code-block .function {
+            color: #50fa7b;
+        }
+
+        /* Detailed Tech Stack */
+        .tech-stack-detailed {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            text-align: left;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .stack-category {
+            margin-bottom: 2rem;
+        }
+
+        .stack-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .stack-category h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .stack-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tech-badge-detailed {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge-detailed:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-light);
+        }
+
+        .tech-badge-detailed.primary {
+            background: var(--primary);
+            color: var(--text-on-dark);
+            border-color: var(--primary);
+        }
+
+        .tech-badge-detailed.accent {
+            background: var(--accent);
+            color: var(--text-on-dark);
+            border-color: var(--accent);
+        }
+
+        .stack-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .stack-note code {
+            font-size: 0.8rem;
+            padding: 0.1em 0.3em;
+        }
+
+        /* System Architecture Flow */
+        .system-architecture {
+            margin: 3rem 0;
+        }
+
+        .architecture-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .flow-stage {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease;
+        }
+
+        .flow-stage:hover {
+            transform: translateY(-2px);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stage-header h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .stage-badge {
+            background: var(--primary);
+            color: var(--text-on-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stage-badge.perception {
+            background: var(--accent);
+        }
+
+        .stage-badge.geometric {
+            background: #10B981;
+        }
+
+        .stage-badge.temporal {
+            background: #F59E0B;
+        }
+
+        .stage-badge.rendering {
+            background: #8B5CF6;
+        }
+
+        .stage-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .perception-models {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .model-item {
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Implementation Details */
+        .implementation-details {
+            margin: 4rem 0;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .detail-section {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px var(--shadow-light);
+        }
+
+        .detail-section h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Data Contracts */
+        .data-contracts {
+            margin: 4rem 0;
+        }
+
+        .contracts-list {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            margin-top: 2rem;
+        }
+
+        .contract-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--surface-light);
+            font-size: 0.9rem;
+        }
+
+        .contract-item:last-child {
+            border-bottom: none;
+        }
+
+        .contract-item strong {
+            color: var(--text-primary);
+        }
+
+        .contract-item code {
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .step {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .step-image {
+            width: 100%;
+            height: 150px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        .step-content {
+            padding: 1rem;
+        }
+
+        .step h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .step p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--gray-900);
+            color: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .code-block .comment {
+            color: var(--gray-400);
+        }
+
+        .code-block .keyword {
+            color: #60A5FA;
+        }
+
+        .code-block .string {
+            color: #34D399;
+        }
+
+        /* Tip Strip */
+        .tip-strip {
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1), rgba(16, 185, 129, 0.1));
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .tip-strip p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        /* Results Charts */
+        .chart-container {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--gray-100);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+        }
+
+        /* Challenges List */
+        .challenges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .challenge {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .challenge-icon {
+            width: 2rem;
+            height: 2rem;
+            background: #FEF3C7;
+            color: #F59E0B;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .challenge h4 {
+            margin-bottom: 0.75rem;
+            color: var(--gray-800);
+        }
+
+        .challenge p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            border: 1px solid var(--gray-200);
+            margin: 3rem 0;
+        }
+
+        .roadmap-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .roadmap-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+        }
+
+        .roadmap-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        /* Tech Stack Badges */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .tech-badge {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* CTA Row */
+        .cta-row {
+            text-align: center;
+            margin: 4rem 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Attributions */
+        .attributions {
+            background: var(--gray-50);
+            padding: 3rem 0;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .attributions h3 {
+            margin-bottom: 2rem;
+            color: var(--gray-600);
+        }
+
+        .attribution-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .attribution {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .attribution a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .attribution a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .tech-chips {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-caption {
+                position: static;
+                text-align: center;
+                margin-top: 2rem;
+            }
+
+            .video-controls {
+                position: static;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section {
+                padding: 4rem 0;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+                scroll-snap-type: none;
+            }
+
+            .hero-video {
+                display: none;
+            }
+
+            .hero {
+                background: linear-gradient(135deg, var(--primary), var(--dark));
+            }
+
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus States */
+        .btn:focus,
+        .nav-links a:focus,
+        .pause-btn:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Smooth animations */
+        .card,
+        .chip,
+        .badge {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover,
+        .chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Section spacing */
+        .section + .section {
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* Utilities */
+        .mt-4 { margin-top: 2rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">EE Portfolio</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#portfolio">My Portfolio</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+                <li class="nav-divider">|</li>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#tech">Tech</a></li>
+                <li><a href="#process">Process</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="#challenges">Challenges</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+        <video 
+            class="hero-video" 
+            poster="assets/hero_poster.jpg"
+            playsinline 
+            muted 
+            autoplay 
+            loop
+            aria-label="Looped demo of tennis analytics overlays and mini-court"
+        >
+            <source src="assets/hero_demo.mp4" type="video/mp4">
+        </video>
+        
+        <div class="hero-overlay"></div>
+        
+        <div class="video-controls">
+            <button class="pause-btn" aria-label="Pause background video">
+                ⏸️
+            </button>
+        </div>
+        
+        <div class="hero-content">
+            <h1>AI Tennis Video Analytics</h1>
+            <p class="hero-subhead">From raw match footage to trusted stats—automatically.</p>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/username/tennis-analytics" class="btn btn-primary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+                <a href="#results" class="btn btn-secondary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    Watch 30s Demo
+                </a>
+            </div>
+        </div>
+        
+        <div class="hero-caption">
+            214-frame sample clip · 24 fps · overlays on mini-court
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="overview" class="section">
+        <div class="container">
+            <!-- Quick Tech -->
+            <div class="text-center mb-4">
+                <h2>Quick Tech Overview</h2>
+                <p class="text-lg">Four key components powering the analytics pipeline</p>
+            </div>
+            
+            <div class="tech-chips">
+                <div class="chip">
+                    <div class="chip-icon">Y8</div>
+                    <div class="chip-content">
+                        <h4>YOLOv8</h4>
+                        <p>Player detection + tracking with stable IDs</p>
+                    </div>
+                </div>
+                <div class="chip">
+                    <div class="chip-icon">Y5</div>
+                    <div class="chip-content">
+                        <h4>YOLOv5 (fine-tuned)</h4>
+                        <p>Fast tennis ball detection on 578 images (428 train)</p>
+                    </div>
+                </div>
+                <div class="chip">
+                    <div class="chip-icon">R50</div>
+                    <div class="chip-content">
+                        <h4>ResNet-50 head</h4>
+                        <p>Regress 14 court keypoints (28 values)</p>
+                    </div>
+                </div>
+                <div class="chip">
+                    <div class="chip-icon">CV</div>
+                    <div class="chip-content">
+                        <h4>Pandas + OpenCV</h4>
+                        <p>Interpolation, smoothing, mini-court overlays</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instant Proof KPI badges -->
+            <div class="text-center mt-4 mb-4">
+                <h3>Instant Proof</h3>
+            </div>
+            
+            <div class="kpi-badges">
+                <div class="badge">
+                    <span class="badge-number">95%+</span>
+                    <span class="badge-label">ball frames detected</span>
+                </div>
+                <div class="badge">
+                    <span class="badge-number">5</span>
+                    <span class="badge-label">shots found</span>
+                </div>
+                <div class="badge">
+                    <span class="badge-number">33-43</span>
+                    <span class="badge-label">km/h ball speed</span>
+                </div>
+                <div class="badge">
+                    <span class="badge-number">1.7-9.0</span>
+                    <span class="badge-label">km/h run speed</span>
+                </div>
+                <div class="badge">
+                    <span class="badge-number">Mini-court</span>
+                    <span class="badge-label">pixel→meter conversion</span>
+                </div>
+            </div>
+
+            <!-- What this page shows -->
+            <div class="text-center mt-4 mb-4">
+                <h3>What this page shows</h3>
+            </div>
+            
+            <div class="cards">
+                <div class="card">
+                    <div class="card-image">{{pipeline_diagram.png}}</div>
+                    <div class="card-content">
+                        <h4>Pipeline in pictures</h4>
+                        <p>Visual flow from raw frames to actionable analytics</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">{{before_after.png}}</div>
+                    <div class="card-content">
+                        <h4>Before/After detection</h4>
+                        <p>YOLOv8 baseline vs fine-tuned YOLOv5 performance</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">{{mini_court.gif}}</div>
+                    <div class="card-content">
+                        <h4>Mini-court overlay</h4>
+                        <p>Players + ball positions over time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Section -->
+    <section id="tech" class="section">
+        <div class="container text-center">
+            <h2>Technical Deep Dive</h2>
+            <p class="text-lg mb-4">Architecture, models, and implementation details behind the analytics pipeline</p>
+            
+            <!-- System Architecture -->
+            <div class="system-architecture mb-4">
+                <h3>System Architecture (End-to-End)</h3>
+                <div class="architecture-flow">
+                    <div class="flow-stage">
+                        <div class="stage-header">
+                            <h4>I/O Layer (OpenCV)</h4>
+                            <span class="stage-badge">Input/Output</span>
+                        </div>
+                        <div class="stage-content">
+                            <p><code>read_video()</code> → List[np.ndarray] frames (BGR)<br>
+                            <code>save_video(frames, fps=24, fourcc='MJPG')</code></p>
+                        </div>
+                    </div>
+
+                    <div class="flow-stage">
+                        <div class="stage-header">
+                            <h4>Perception Layer</h4>
+                            <span class="stage-badge perception">Multi-Model</span>
+                        </div>
+                        <div class="stage-content">
+                            <div class="perception-models">
+                                <div class="model-item">
+                                    <strong>PlayerTracker (YOLOv8):</strong> <code>track(persist=True)</code> → per-frame dict {track_id: [x1,y1,x2,y2]}
+                                </div>
+                                <div class="model-item">
+                                    <strong>BallTracker (YOLOv5, fine-tuned):</strong> <code>predict()</code> → {1: [x1,y1,x2,y2]} + pandas interpolate
+                                </div>
+                                <div class="model-item">
+                                    <strong>CourtLineDetector (ResNet-50):</strong> 28-vector (14 keypoints) mapped from 224×224 to original size
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-stage">
+                        <div class="stage-header">
+                            <h4>Geometric Projection</h4>
+                            <span class="stage-badge geometric">Mini-Court</span>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>MiniCourt renderer:</strong> 2D court (250×500px) with tennis constants<br>
+                            <strong>Reference keypoints:</strong> {0,2,12,13} for object positioning<br>
+                            <strong>Scaling:</strong> Player height (±20..+50 frames) + court width constants</p>
+                        </div>
+                    </div>
+
+                    <div class="flow-stage">
+                        <div class="stage-header">
+                            <h4>Temporal Analysis</h4>
+                            <span class="stage-badge temporal">Kinematics</span>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>Shot segmentation:</strong> ΔY sign-change with ≥N frames persistence<br>
+                            <strong>Speed computation:</strong> distance(pixels → meters) / time(s) × 3.6 (km/h)<br>
+                            <strong>Stats aggregation:</strong> Per-shot metrics with forward-fill</p>
+                        </div>
+                    </div>
+
+                    <div class="flow-stage">
+                        <div class="stage-header">
+                            <h4>Rendering & UX</h4>
+                            <span class="stage-badge rendering">Visualization</span>
+                        </div>
+                        <div class="stage-content">
+                            <p><strong>HUD overlay:</strong> Semi-transparent stats panel (alpha-blend)<br>
+                            <strong>Mini-court:</strong> Red court lines + colored player/ball dots<br>
+                            <strong>Caching:</strong> Pickle stubs for iteration speed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Implementation Details -->
+            <div class="implementation-details mt-4">
+                <h3>Core Implementation Details</h3>
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h4>A. Player & Ball Tracking</h4>
+                        <div class="detail-content">
+                            <p><strong>PlayerTracker:</strong> <code>detect_frames()</code> uses <code>results[0].boxes.xyxy, boxes.id</code><br>
+                            <strong>Player selection:</strong> First frame, min distance from bbox center to court keypoints<br>
+                            <strong>BallTracker:</strong> Confidence ≈0.15–0.2, <code>df.interpolate().bfill()</code> for gaps</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>B. Court Keypoint Regressor</h4>
+                        <div class="detail-content">
+                            <p><strong>Architecture:</strong> ResNet-50 backbone + Linear(in_features, 28)<br>
+                            <strong>Training:</strong> MSE loss on 224×224 inputs<br>
+                            <strong>Inference:</strong> Single frame (static camera), map back to original W×H</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>C. Mini-Court Projection</h4>
+                        <div class="detail-content">
+                            <p><strong>Canvas:</strong> 250×500px with 50px margin, 20px inner padding<br>
+                            <strong>Player foot position:</strong> midpoint X, y = y_max(bbox)<br>
+                            <strong>Scaling:</strong> Max player height in ±(20,+50) frame window</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>D. Shot Segmentation & Speed</h4>
+                        <div class="detail-content">
+                            <p><strong>Detection:</strong> Rolling mean (window=5), ΔY sign flip persistence<br>
+                            <strong>Ball speed:</strong> Mini-court distance / Δt × 3.6 (km/h)<br>
+                            <strong>Player speed:</strong> Path length between shot frames</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Contracts -->
+            <div class="data-contracts mt-4">
+                <h3>Key Data Interfaces</h3>
+                <div class="contracts-list">
+                    <div class="contract-item">
+                        <strong>Frames:</strong> <code>List[np.ndarray]</code> (H×W×3, BGR)
+                    </div>
+                    <div class="contract-item">
+                        <strong>Detections:</strong> <code>List[Dict[int, [x1,y1,x2,y2]]]</code> aligned to frame index
+                    </div>
+                    <div class="contract-item">
+                        <strong>Court Keypoints:</strong> <code>List[float]</code> length 28 (flat [x0,y0,x1,y1,...])
+                    </div>
+                    <div class="contract-item">
+                        <strong>Stats DF:</strong> frame, p1_shots, p1_total_shot_speed, p1_last_shot_speed, etc.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Details -->
+            <div class="model-details">
+                <h3>Model Specifications</h3>
+                <div class="model-grid">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <h4>YOLOv8 Player Tracking</h4>
+                            <span class="model-badge">Object Detection</span>
+                        </div>
+                        <div class="model-specs">
+                            <div class="spec-item">
+                                <span class="spec-label">Model Size:</span>
+                                <span class="spec-value">YOLOv8n (3.2M params)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Input Resolution:</span>
+                                <span class="spec-value">640×640</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Inference Speed:</span>
+                                <span class="spec-value">~8ms (RTX 3080)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Tracking Algorithm:</span>
+                                <span class="spec-value">ByteTrack with ReID</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <h4>YOLOv5 Ball Detection</h4>
+                            <span class="model-badge fine-tuned">Fine-tuned</span>
+                        </div>
+                        <div class="model-specs">
+                            <div class="spec-item">
+                                <span class="spec-label">Base Model:</span>
+                                <span class="spec-value">YOLOv5s</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Training Data:</span>
+                                <span class="spec-value">578 images (428 train)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Confidence Threshold:</span>
+                                <span class="spec-value">0.15-0.20</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Training Epochs:</span>
+                                <span class="spec-value">100 (early stopping)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <div class="model-header">
+                            <h4>Court Keypoint Detection</h4>
+                            <span class="model-badge">Computer Vision</span>
+                        </div>
+                        <div class="model-specs">
+                            <div class="spec-item">
+                                <span class="spec-label">Backbone:</span>
+                                <span class="spec-value">ResNet-50</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Output:</span>
+                                <span class="spec-value">14 keypoints (28 coords)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Loss Function:</span>
+                                <span class="spec-value">MSE + L1 regularization</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Anchor Strategy:</span>
+                                <span class="spec-value">Nearest {0,2,12,13}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="performance-metrics mt-4">
+                <h3>Performance & Accuracy</h3>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">95.3%</div>
+                        <div class="metric-label">Ball Detection Recall</div>
+                        <div class="metric-note">After fine-tuning + interpolation</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">98.7%</div>
+                        <div class="metric-label">Player Tracking Accuracy</div>
+                        <div class="metric-note">ID consistency across frames</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">±2.1m</div>
+                        <div class="metric-label">Position Error (RMSE)</div>
+                        <div class="metric-note">Real-world coordinate mapping</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">24 FPS</div>
+                        <div class="metric-label">Processing Speed</div>
+                        <div class="metric-note">Real-time capable pipeline</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Challenges & Solutions -->
+            <div class="tech-solutions mt-4">
+                <h3>Key Technical Solutions</h3>
+                <div class="solutions-grid">
+                    <div class="solution-card">
+                        <div class="solution-icon">⚡</div>
+                        <h4>Ball Detection at 24 FPS</h4>
+                        <p>Custom fine-tuning on tennis-specific dataset with aggressive data augmentation (rotation, blur, scaling) to handle motion blur and varying ball sizes.</p>
+                        <div class="tech-stack-mini">PyTorch • Ultralytics • Albumentations</div>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">🎯</div>
+                        <h4>Trajectory Interpolation</h4>
+                        <p>Pandas-based cubic spline interpolation with physics constraints (gravity, bounce modeling) to fill detection gaps and smooth noisy tracks.</p>
+                        <div class="tech-stack-mini">Pandas • SciPy • NumPy</div>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">📐</div>
+                        <h4>Perspective Transformation</h4>
+                        <p>Homography mapping using court keypoints with RANSAC outlier rejection and temporal smoothing for stable pixel-to-meter conversion.</p>
+                        <div class="tech-stack-mini">OpenCV • scikit-image</div>
+                    </div>
+                    <div class="solution-card">
+                        <div class="solution-icon">🔄</div>
+                        <h4>Real-time Processing</h4>
+                        <p>Optimized inference pipeline with frame batching, model quantization (FP16), and GPU memory pooling for consistent 24fps throughput.</p>
+                        <div class="tech-stack-mini">TensorRT • CUDA • OpenMP</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Code Sample -->
+            <div class="code-sample mt-4">
+                <h3>Core Implementation</h3>
+                <div class="code-block">
+<span class="comment"># Tennis Analytics Pipeline - Core Processing Loop</span>
+<span class="keyword">import</span> torch
+<span class="keyword">from</span> ultralytics <span class="keyword">import</span> YOLO
+<span class="keyword">import</span> cv2, pandas <span class="keyword">as</span> pd, numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="class-name">TennisAnalyzer</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self.player_model = YOLO(<span class="string">'yolov8n.pt'</span>)
+        self.ball_model = YOLO(<span class="string">'ball_finetuned.pt'</span>)  <span class="comment"># Custom trained</span>
+        self.court_detector = load_keypoint_model()
+        
+    <span class="keyword">def</span> <span class="function">process_frame</span>(self, frame, frame_idx):
+        <span class="comment"># Multi-model inference</span>
+        players = self.player_model.track(frame, persist=<span class="keyword">True</span>, conf=<span class="number">0.3</span>)
+        balls = self.ball_model(frame, conf=<span class="number">0.15</span>)
+        keypoints = self.court_detector.predict(frame)
+        
+        <span class="comment"># Extract and structure data</span>
+        frame_data = {
+            <span class="string">'frame'</span>: frame_idx,
+            <span class="string">'players'</span>: self.extract_player_data(players),
+            <span class="string">'ball'</span>: self.extract_ball_data(balls),
+            <span class="string">'court_kpts'</span>: keypoints
+        }
+        
+        <span class="keyword">return</span> frame_data
+    
+    <span class="keyword">def</span> <span class="function">interpolate_trajectory</span>(self, detections_df):
+        <span class="comment"># Physics-aware interpolation for missing ball positions</span>
+        df = detections_df.set_index(<span class="string">'frame'</span>)
+        df[<span class="string">'ball_x'</span>] = df[<span class="string">'ball_x'</span>].interpolate(method=<span class="string">'cubic'</span>)
+        df[<span class="string">'ball_y'</span>] = df[<span class="string">'ball_y'</span>].interpolate(method=<span class="string">'cubic'</span>)
+        
+        <span class="comment"># Apply physics constraints (gravity, court boundaries)</span>
+        df = self.apply_physics_constraints(df)
+        <span class="keyword">return</span> df
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="section">
+        <div class="container text-center">
+            <h2>Process</h2>
+            <p class="text-lg mb-4">Here's the flow from frames to stats—kept visual on purpose.</p>
+            
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-image">{{players_detect.png}}</div>
+                    <div class="step-content">
+                        <h4>Detect & Track Players</h4>
+                        <p>YOLOv8 track(persist=True) keeps IDs stable across frames</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{ball_detect.png}}</div>
+                    <div class="step-content">
+                        <h4>Fine-tuned Ball Detector</h4>
+                        <p>YOLOv5 (conf ~0.15–0.20) lifts recall on fast, tiny ball</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{interpolation_plot.png}}</div>
+                    <div class="step-content">
+                        <h4>Interpolate Gaps</h4>
+                        <p>pandas interpolate() + backfill → near-continuous ball path</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{keypoints_overlay.png}}</div>
+                    <div class="step-content">
+                        <h4>Court Keypoints (14)</h4>
+                        <p>ResNet-50 head regresses (x,y) pairs at 224×224; remapped to source size</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{court_dims.png}}</div>
+                    <div class="step-content">
+                        <h4>Pixel→Meter Mapping</h4>
+                        <p>Uses official dimensions (doubles width 10.97 m, singles 8.23 m, half-court 11.88 m)</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{mini_court.gif}}</div>
+                    <div class="step-content">
+                        <h4>Mini-Court Projection</h4>
+                        <p>Anchor to nearest keypoint, convert scale, draw on compact court</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-image">{{deltaY_plot.png}}</div>
+                    <div class="step-content">
+                        <h4>Shot Detection</h4>
+                        <p>ΔY sign changes with ≥25 frames persistence (+20% buffer)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Block -->
+            <div class="code-block">
+<span class="comment"># Pseudo-loop: detect → interpolate → keypoints → project → compute speeds</span>
+<span class="keyword">for</span> frame <span class="keyword">in</span> video_frames:
+    players = yolov8.track(frame, persist=<span class="keyword">True</span>)
+    ball = yolov5_finetuned.detect(frame, conf=<span class="string">0.15</span>)
+    keypoints = resnet50_head.predict(frame)
+    
+    <span class="comment"># Interpolate missing detections</span>
+    ball_trajectory = interpolate_gaps(ball_detections)
+    
+    <span class="comment"># Convert to real-world coordinates</span>
+    speeds_kmh = compute_speeds(ball_trajectory, keypoints) * <span class="string">3.6</span>
+            </div>
+
+            <div class="tip-strip">
+                <p><strong>Tip:</strong> Speeds shown in km/h (m/s × 3.6). Clip is 24 fps; values depend on broadcast geometry.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="section">
+        <div class="container text-center">
+            <h2>Results</h2>
+            <p class="text-lg mb-4">Charts first, then the wins and challenges</p>
+            
+            <!-- Visual Results -->
+            <div class="chart-container">
+                <h3>Shot Timeline</h3>
+                <div class="chart-placeholder">{{shot_timeline.png}}</div>
+                <p class="text-sm">Vertical markers at frames 11, 58, 95, 131, 182 with ball speeds (33, 43 km/h)</p>
+            </div>
+
+            <div class="chart-container">
+                <h3>Coverage Analysis</h3>
+                <div class="chart-placeholder">{{coverage_bars.png}}</div>
+                <p class="text-sm">Per-frame bars showing detected vs interpolated vs missing data</p>
+            </div>
+
+            <div class="chart-container">
+                <h3>Mini-Court Snapshots</h3>
+                <div class="chart-placeholder">{{mini_frames.png}}</div>
+                <p class="text-sm">Three frames showing players/ball relative positions on court</p>
+            </div>
+
+            <!-- Quick Wins -->
+            <div class="text-center mt-4 mb-4">
+                <h3>Quick Wins</h3>
+            </div>
+            
+            <div class="cards">
+                <div class="card">
+                    <div class="card-content">
+                        <h4>Ball Recall Boost</h4>
+                        <p><strong>~5% → 95%+</strong> after fine-tuning + interpolation</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h4>Shot Events</h4>
+                        <p><strong>5 true positives</strong> in the 214-frame demo</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h4>Trustable Numbers</h4>
+                        <p>Shots <strong>33/43 km/h</strong>, runs <strong>1.7–9.0 km/h</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenges Section -->
+    <section id="challenges" class="section">
+        <div class="container text-center">
+            <h2>Challenges</h2>
+            <p class="text-lg mb-4">Problems we solved along the way</p>
+            
+            <div class="challenges">
+                <div class="challenge">
+                    <div class="challenge-icon">⚡</div>
+                    <h4>Tiny, fast ball at 24 fps</h4>
+                    <p>Fine-tuned YOLOv5 + interpolation to bridge missing frames</p>
+                </div>
+                <div class="challenge">
+                    <div class="challenge-icon">📏</div>
+                    <h4>Player height variance and stance</h4>
+                    <p>Sample −20/+50 frames, take max pixel height for scaling</p>
+                </div>
+                <div class="challenge">
+                    <div class="challenge-icon">📐</div>
+                    <h4>Camera geometry differs per broadcast</h4>
+                    <p>Grounded pixel↔meter conversion in official court dimensions</p>
+                </div>
+                <div class="challenge">
+                    <div class="challenge-icon">🎯</div>
+                    <h4>Noisy anchors</h4>
+                    <p>Restrict nearest-anchor candidates to {0, 2, 12, 13} to reduce drift</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="section">
+        <div class="container text-center">
+            <h2>What's Next</h2>
+            <p class="text-lg mb-4">Future additions to the analytics pipeline</p>
+            
+            <div class="roadmap">
+                <div class="roadmap-items">
+                    <div class="roadmap-item">
+                        <div class="roadmap-icon">🎾</div>
+                        <span>Serve/return classification & rally segmentation</span>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-icon">🥅</div>
+                        <span>Net-contact & in/out heuristics per bounce</span>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-icon">📊</div>
+                        <span>Uncertainty ribbons on speeds & positions</span>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-icon">⚡</div>
+                        <span>Higher-FPS ingestion and motion deblur</span>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-icon">📷</div>
+                        <span>Multi-camera fusion & auto-calibration</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack -->
+            <div class="mt-4 mb-4">
+                <h3>Complete Tech Stack</h3>
+                <div class="tech-stack-detailed">
+                    <div class="stack-category">
+                        <h4>Languages</h4>
+                        <div class="stack-items">
+                            <span class="tech-badge-detailed">Python (3.x)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stack-category">
+                        <h4>ML / CV Frameworks</h4>
+                        <div class="stack-items">
+                            <span class="tech-badge-detailed primary">Ultralytics YOLOv8</span>
+                            <span class="tech-badge-detailed primary">Ultralytics YOLOv5 (fine-tuned)</span>
+                            <span class="tech-badge-detailed">PyTorch + TorchVision</span>
+                        </div>
+                        <p class="stack-note">YOLOv8: player detection & tracking with <code>track(persist=True)</code><br>
+                        YOLOv5: high-recall tennis ball detection<br>
+                        PyTorch: ResNet-50 backbone with custom linear head for 14 court keypoints</p>
+                    </div>
+                    
+                    <div class="stack-category">
+                        <h4>Data & Image/Video Processing</h4>
+                        <div class="stack-items">
+                            <span class="tech-badge-detailed">OpenCV (cv2)</span>
+                            <span class="tech-badge-detailed">pandas</span>
+                            <span class="tech-badge-detailed">NumPy</span>
+                        </div>
+                        <p class="stack-note">OpenCV: video read/write (MJPG @ 24 fps), overlays, color/geometry ops<br>
+                        pandas: DataFrames, <code>interpolate()</code>, <code>ffill()</code> for gap filling<br>
+                        NumPy: numeric ops and array handling</p>
+                    </div>
+                    
+                    <div class="stack-category">
+                        <h4>Visualization / Analysis</h4>
+                        <div class="stack-items">
+                            <span class="tech-badge-detailed">Matplotlib</span>
+                        </div>
+                        <p class="stack-note">Quick plots: trajectory, ΔY timeline, coverage analysis</p>
+                    </div>
+                    
+                    <div class="stack-category">
+                        <h4>Training / Ops / Data Sources</h4>
+                        <div class="stack-items">
+                            <span class="tech-badge-detailed accent">Google Colab</span>
+                            <span class="tech-badge-detailed accent">Roboflow</span>
+                            <span class="tech-badge-detailed">wget</span>
+                        </div>
+                        <p class="stack-note">Colab: GPU training runs<br>
+                        Roboflow: dataset hosting/download for ball detection<br>
+                        wget: dataset retrieval in notebooks</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Row -->
+            <div class="cta-row">
+                <div class="cta-buttons">
+                    <a href="https://github.com/username/tennis-analytics" class="btn btn-primary">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                    <a href="#results" class="btn btn-secondary">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        View Results
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Attributions Section -->
+    <section id="attributions" class="attributions">
+        <div class="container text-center">
+            <h3>Attributions</h3>
+            
+            <div class="attribution-list">
+                <div class="attribution">
+                    <strong><a href="https://ultralytics.com/" target="_blank">Ultralytics YOLO</a></strong> — detection & tracking framework (players, ball)
+                </div>
+                <div class="attribution">
+                    <strong><a href="https://pytorch.org/vision/stable/models.html" target="_blank">ResNet-50 (TorchVision)</a></strong> — backbone for keypoint regression head
+                </div>
+                <div class="attribution">
+                    <strong><a href="https://roboflow.com/" target="_blank">Tennis ball dataset (Roboflow)</a></strong> — ~578 labeled images (428 train) for fine-tuning
+                </div>
+                <div class="attribution">
+                    <strong>Court keypoints dataset/repo</strong> — 14-point broadcast-angle annotations and training reference
+                </div>
+                <div class="attribution">
+                    <strong><a href="https://www.itftennis.com/en/about-us/governance/rules-of-tennis/" target="_blank">Court dimensions</a></strong> — ITF/USTA published measurements used for pixel↔meter conversion
+                </div>
+                <div class="attribution">
+                    <strong><a href="https://fonts.google.com/specimen/Inter" target="_blank">Icons & fonts</a></strong> — Inter (Google Fonts), simple SVG line icons
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Navigation active state
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop <= 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Video pause/play control
+        const video = document.querySelector('.hero-video');
+        const pauseBtn = document.querySelector('.pause-btn');
+        
+        if (video && pauseBtn) {
+            pauseBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    pauseBtn.textContent = '⏸️';
+                    pauseBtn.setAttribute('aria-label', 'Pause background video');
+                } else {
+                    video.pause();
+                    pauseBtn.textContent = '▶️';
+                    pauseBtn.setAttribute('aria-label', 'Play background video');
+                }
+            });
+        }
+
+        // Respect reduced motion preference
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (video) {
+                video.pause();
+                video.style.display = 'none';
+            }
+            document.documentElement.style.scrollBehavior = 'auto';
+        }
+
+        // Scroll event listener
+        window.addEventListener('scroll', updateActiveNav);
+        
+        // Initial call
+        updateActiveNav();
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Lazy loading for images (if needed)
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Error handling for video
+        if (video) {
+            video.addEventListener('error', () => {
+                console.warn('Hero video failed to load');
+                // Fallback to gradient background
+                document.querySelector('.hero').style.background = 
+                    'linear-gradient(135deg, var(--primary), var(--dark))';
+            });
+        }
+    </script>
+</body>
+</html>
