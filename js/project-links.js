@@ -24,7 +24,7 @@ const PROJECT_URL_MAP = {
     "USB-C Development Board": "usb-c-development-board.html",
     
     // Computer Vision
-    "Real-time Face Detection System": "real-time-face-detection-system.html",
+    "Tennis Analysis System": "tennis_analysis_system.html",
     "Autonomous Drone Navigation": "autonomous-drone-navigation.html",
     "Industrial Inspection System": "industrial-inspection-system.html",
     "Hand Gesture Recognition": "hand-gesture-recognition.html",

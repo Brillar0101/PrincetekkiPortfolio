@@ -25,7 +25,7 @@ const PROJECT_STATUS_CONFIG = {
         "USB-C Development Board": "in-progress"
     },
     vision: {
-        "Real-time Face Detection System": "in-progress",
+        "Tennis Analysis System": "in-progress",
         "Autonomous Drone Navigation": "in-progress",
         "Industrial Inspection System": "coming-soon",
         "Hand Gesture Recognition": "complete",

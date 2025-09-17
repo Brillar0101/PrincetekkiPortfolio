@@ -25,7 +25,7 @@ const PROJECT_VISIBILITY_CONFIG = {
         "USB-C Development Board": false
     },
     vision: {
-        "Real-time Face Detection System": true,    // All set to false as examples
+        "Tennis Analysis System": true,    // All set to false as examples
         "Autonomous Drone Navigation": false,
         "Industrial Inspection System": false,
         "Hand Gesture Recognition": false,
