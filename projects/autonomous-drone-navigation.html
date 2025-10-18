@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fashion GAN: A deep learning project that generates synthetic fashion images using Generative Adversarial Networks. Built with TensorFlow, Keras, and trained on Fashion MNIST dataset.">
+    
+    <title>Fashion GAN: Generating Synthetic Fashion with Deep Learning</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Fashion GAN: Generating Synthetic Fashion with Deep Learning">
+    <meta property="og:description" content="A practical deep learning project that generates realistic fashion images using GANs. Built with TensorFlow and Keras in Google Colab.">
+    <meta property="og:image" content="assets/images/fashion-gan-og.jpg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fashion GAN: Generating Synthetic Fashion with Deep Learning">
+    <meta name="twitter:description" content="A practical deep learning project that generates realistic fashion images using GANs. Built with TensorFlow and Keras in Google Colab.">
+    <meta name="twitter:image" content="assets/images/fashion-gan-og.jpg">
+    
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Fashion GAN: Synthetic Fashion Image Generator",
+        "description": "A deep learning project using Generative Adversarial Networks to generate synthetic fashion images from random noise.",
+        "author": {
+            "@type": "Person",
+            "name": "Your Name"
+        },
+        "keywords": "machine learning, deep learning, GAN, generative adversarial network, computer vision, fashion, TensorFlow, Keras, Python",
+        "programmingLanguage": "Python",
+        "runtimePlatform": "Google Colab, TensorFlow 2.x"
+    }
+    </script>
+    
+    <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+        }
+        
+        /* ============================================
+           HERO SECTION WITH VIDEO BACKGROUND
+           ============================================ */
+        
+        .project-hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Video Background Container */
+        .project-hero__video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        /* Video Background */
+        .project-hero__video-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+        }
+        
+        /* Fallback image if video doesn't load */
+        .project-hero__fallback-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 0;
+        }
+        
+        /* Gradient overlay on top of video */
+        .project-hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%);
+            z-index: 1;
+        }
+        
+        .project-hero__content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .project-hero__title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: white;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-hero__tagline {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .project-hero__subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 2rem;
+        }
+        
+        .project-hero__cta-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .project-hero__cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            color: #667eea;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .project-hero__cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .project-hero__cta--secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .project-hero__cta--secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .project-hero__cta-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* ============================================
+           SECTIONS
+           ============================================ */
+        
+        .project-section {
+            padding: 6rem 2rem;
+        }
+        
+        .project-section__container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .project-section__title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        /* Alternating backgrounds */
+        .project-blurb {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+        }
+        
+        .project-demo {
+            background: white;
+        }
+        
+        /* ============================================
+           VIDEO TABS
+           ============================================ */
+        
+        .video-tabs {
+            margin: 0 auto;
+            max-width: 900px;
+        }
+        
+        .video-tabs__buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .video-tabs__button {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            position: relative;
+        }
+        
+        .video-tabs__button:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .video-tabs__button--active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .video-tabs__panel {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .video-tabs__panel--active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .video-intro {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        /* ============================================
+           VIDEO FRAME
+           ============================================ */
+        
+        .project-demo__frame {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-demo__video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        /* ============================================
+           KEY MOMENTS
+           ============================================ */
+        
+        .key-moments {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .key-moment {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        
+        .key-moment:hover {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding-left: calc(1.5rem - 4px);
+        }
+        
+        .key-moment:last-child {
+            border-bottom: none;
+        }
+        
+        .key-moment__time {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 70px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+        
+        .key-moment__content {
+            flex: 1;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .key-moment__content strong {
+            color: #222;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* ============================================
+           CONTENT SECTIONS
+           ============================================ */
+        
+        .project-blurb__content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .project-blurb__intro {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .project-blurb__details {
+            margin-bottom: 3rem;
+        }
+        
+        .project-blurb__details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .project-blurb__details ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .project-blurb__details li {
+            padding: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            line-height: 1.7;
+        }
+        
+        .project-blurb__specs {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .project-blurb__specs-title {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .project-blurb__specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .project-blurb__spec {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .project-blurb__spec-icon {
+            flex-shrink: 0;
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* ============================================
+           CARDS
+           ============================================ */
+        
+        .expertise-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .expertise-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .expertise-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .expertise-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .contact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .contact-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .contact-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .contact-card h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* ============================================
+           GRIDS
+           ============================================ */
+        
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        /* ============================================
+           PROJECT CARDS (Gallery)
+           ============================================ */
+        
+        .project-card-detailed {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card-detailed:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .project-card-detailed .project-image {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+        
+        .project-card-detailed .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .project-info {
+            padding: 1.5rem;
+        }
+        
+        .project-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: #333;
+        }
+        
+        .project-info p {
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Badge styles */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-setup {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .badge-data {
+            background: rgba(255, 167, 38, 0.1);
+            color: #ffa726;
+        }
+        
+        .badge-architecture {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-training {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .badge-results {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-deployment {
+            background: rgba(255, 167, 38, 0.1);
+            color: #ffa726;
+        }
+        
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        
+        .cta {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .cta h2 {
+            color: white;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.15rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ============================================
+           FOOTER
+           ============================================ */
+        
+        .project-footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+        }
+        
+        .project-footer__container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .project-footer__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .project-footer__copyright {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+        
+        .project-footer__links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .project-footer__link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .project-footer__link:hover {
+            color: white;
+        }
+        
+        .project-footer__social {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .project-footer__social-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 8px;
+            display: inline-flex;
+        }
+        
+        .project-footer__social-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* ============================================
+           METRICS / STATS
+           ============================================ */
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .stat-value.accent {
+            color: #ffa726;
+        }
+        
+        /* ============================================
+           LIST STYLES
+           ============================================ */
+        
+        .importance-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .importance-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .importance-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .importance-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .importance-content strong {
+            color: #333;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .importance-content span {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Future work items */
+        .future-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .future-item {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .future-item:nth-child(even) {
+            border-left-color: #ffa726;
+        }
+        
+        .future-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .future-item h3 {
+            color: #333;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+        
+        .future-item p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        
+        @media (max-width: 768px) {
+            .project-section {
+                padding: 4rem 1rem;
+            }
+        
+            .project-hero__title {
+                font-size: 2rem;
+            }
+        
+            .project-hero__tagline {
+                font-size: 1rem;
+            }
+        
+            .project-hero__cta {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+            
+            .project-hero__cta-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .project-hero__cta {
+                width: 100%;
+                justify-content: center;
+            }
+        
+            .video-tabs__buttons {
+                flex-direction: column;
+                gap: 0;
+                border-bottom: none;
+            }
+        
+            .video-tabs__button {
+                padding: 0.75rem 1rem;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+                border-left: 3px solid transparent;
+                margin-bottom: 0;
+            }
+        
+            .video-tabs__button--active {
+                border-left-color: #667eea;
+                background: #f8f9ff;
+            }
+        
+            .key-moment {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+        
+            .key-moment__time {
+                min-width: auto;
+            }
+        
+            .expertise-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        
+            .project-footer__content {
+                flex-direction: column;
+                text-align: center;
+            }
+        
+            .project-footer__links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        
+            .cta {
+                padding: 3rem 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .contact-icon {
+                width: 70px;
+                height: 70px;
+            }
+        
+            .project-blurb__spec {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2.5rem;
+            }
+            
+            .importance-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+        
+        /* ============================================
+           ACCESSIBILITY
+           ============================================ */
+        
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Focus styles */
+        *:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+        
+        button:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header / Hero Section with Video Background -->
+    <header class="project-hero" id="top">
+        <!-- Video Background Container -->
+        <div class="project-hero__video-container">
+            <!-- Fallback Background -->
+            <div class="project-hero__fallback-bg"></div>
+            
+            <!-- Background Video -->
+            <video class="project-hero__video-bg" autoplay muted loop playsinline preload="auto">
+                <source src="Why_Pick_Pamplin_2025_Version.mp4" type="video/mp4">
+                <source src="assets/video/hero-background.webm" type="video/webm">
+                <!-- Your browser does not support the video tag. -->
+            </video>
+        </div>
+        
+        <!-- Gradient Overlay -->
+        <div class="project-hero__overlay"></div>
+        
+        <!-- Content -->
+        <div class="project-hero__content">
+            <h1 class="project-hero__title">Fashion GAN: Synthetic Fashion Generator</h1>
+            <p class="project-hero__tagline">
+                I built a generative AI that creates realistic fashion images from random noise using deep learning.
+            </p>
+            <p class="project-hero__subtitle">
+                Built with TensorFlow & Keras • Trained on Fashion MNIST • Runs in Google Colab
+            </p>
+            
+            <div class="project-hero__cta-container">
+                <a href="#video-demo" class="project-hero__cta">
+                    <span class="project-hero__cta-icon">▶</span>
+                    <span>Watch the Demo</span>
+                </a>
+                <a href="https://github.com/Brillar0101/Fashion_GAN/blob/main/Fashion_GAN_Network.ipynb" class="project-hero__cta project-hero__cta--secondary" target="_blank" rel="noopener noreferrer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>View on GitHub</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Video Demo Section -->
+        <section class="project-section" id="video-demo">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Project Demo</h2>
+                
+                <div class="video-tabs" role="tablist">
+                    <div class="video-tabs__buttons">
+                        <button role="tab" aria-selected="true" aria-controls="video-panel" id="video-tab" class="video-tabs__button video-tabs__button--active">
+                            Video Demo
+                        </button>
+                        <button role="tab" aria-selected="false" aria-controls="moments-panel" id="moments-tab" class="video-tabs__button">
+                            Key Moments
+                        </button>
+                    </div>
+                    
+                    <div role="tabpanel" id="video-panel" aria-labelledby="video-tab" class="video-tabs__panel video-tabs__panel--active">
+                        <p class="video-intro">
+                            Watch how the GAN learns to generate fashion items from scratch. You'll see the training process, loss curves, and progressively better images as the model improves over 2000 epochs.
+                        </p>
+                        
+                        <div class="project-demo__frame">
+                            <video id="demo-video" class="project-demo__video" controls preload="metadata">
+                                <source src="Why_Pick_Pamplin_2025_Version.mp4" type="video/mp4">
+                                <source src="assets/video/fashion-gan-demo.webm" type="video/webm">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                    
+                    <div role="tabpanel" id="moments-panel" aria-labelledby="moments-tab" class="video-tabs__panel" hidden>
+                        <ul class="key-moments">
+                            <li class="key-moment">
+                                <span class="key-moment__time">00:15</span>
+                                <div class="key-moment__content">
+                                    <strong>Setup & Data Loading:</strong> Installing dependencies and loading the Fashion MNIST dataset with 60,000 training images of clothing items.
+                                </div>
+                            </li>
+                            <li class="key-moment">
+                                <span class="key-moment__time">02:30</span>
+                                <div class="key-moment__content">
+                                    <strong>Building the Generator:</strong> Creating a neural network that transforms 128 random values into realistic 28×28 fashion images through upsampling layers.
+                                </div>
+                            </li>
+                            <li class="key-moment">
+                                <span class="key-moment__time">04:45</span>
+                                <div class="key-moment__content">
+                                    <strong>Building the Discriminator:</strong> Creating a classifier that learns to distinguish real fashion images from generated fakes.
+                                </div>
+                            </li>
+                            <li class="key-moment">
+                                <span class="key-moment__time">07:20</span>
+                                <div class="key-moment__content">
+                                    <strong>Custom Training Loop:</strong> Implementing the adversarial training process where the generator and discriminator compete to improve each other.
+                                </div>
+                            </li>
+                            <li class="key-moment">
+                                <span class="key-moment__time">10:15</span>
+                                <div class="key-moment__content">
+                                    <strong>Results & Generated Images:</strong> Viewing the final outputs—realistic shoes, bags, pants, and shirts generated entirely from random noise.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Overview -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">What This Does</h2>
+                
+                <div class="project-blurb__content">
+                    <p class="project-blurb__intro">
+                        This project demonstrates how Generative Adversarial Networks (GANs) can create entirely new fashion images from scratch. I built a system where two neural networks compete: a generator that creates images and a discriminator that judges them. Through this competition, the generator learns to produce increasingly realistic clothing items—shoes, bags, shirts, and pants—that never existed in the training data.
+                    </p>
+                    
+                    <div class="project-blurb__details">
+                        <h3>How It Works</h3>
+                        <ul>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Data Preparation:</strong> I load and preprocess 60,000 fashion images from the Fashion MNIST dataset, scaling pixel values and batching for efficient training.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Build Two Networks:</strong> The generator transforms random noise into images using upsampling layers. The discriminator classifies images as real or fake using convolutional layers.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Adversarial Training:</strong> I train both networks simultaneously in a custom loop. The generator tries to fool the discriminator, while the discriminator gets better at spotting fakes.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Balance & Iterate:</strong> Careful tuning of learning rates and training schedules ensures both networks improve together without one dominating.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Generate Results:</strong> After 2000 epochs, the generator produces high-quality fashion images from any random input vector.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-blurb__specs">
+                        <h3 class="project-blurb__specs-title">What Makes This Unique</h3>
+                        <ul class="project-blurb__specs-list">
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Custom Training Loop:</strong> Full control over the adversarial training process using TensorFlow's subclassing API for precise model behavior.
+                                </div>
+                            </li>
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Balanced Learning:</strong> Carefully tuned learning rates (0.0001 for generator, 0.00001 for discriminator) prevent mode collapse and ensure stable training.
+                                </div>
+                            </li>
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Production-Ready Code:</strong> Clean, documented implementation that can be adapted for other image generation tasks or larger datasets.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Applications -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Real-World Applications</h2>
+                
+                <div class="expertise-grid" style="max-width: 900px; margin: 0 auto;">
+                    <div class="expertise-card">
+                        <h3>Fashion Design Prototyping</h3>
+                        <p>Generate thousands of design variations quickly to explore new styles before committing to production samples.</p>
+                        <span class="badge badge-setup" style="margin-top: 0.5rem;">Prototype</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Synthetic Training Data</h3>
+                        <p>Create diverse training datasets for other computer vision models without expensive photoshoots or manual labeling.</p>
+                        <span class="badge badge-data" style="margin-top: 0.5rem;">Ready to Pilot</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>E-commerce Personalization</h3>
+                        <p>Generate customized product visualizations based on user preferences to increase engagement and conversion rates.</p>
+                        <span class="badge badge-setup" style="margin-top: 0.5rem;">Research-Stage</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Data Augmentation</h3>
+                        <p>Expand limited fashion datasets by generating similar but distinct examples to improve classifier performance.</p>
+                        <span class="badge badge-data" style="margin-top: 0.5rem;">Ready to Pilot</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Trend Forecasting</h3>
+                        <p>Analyze generated outputs to identify emerging patterns and predict future fashion trends based on learned features.</p>
+                        <span class="badge badge-setup" style="margin-top: 0.5rem;">Research-Stage</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Content Creation at Scale</h3>
+                        <p>Produce placeholder images and mockups for marketing materials without photographer costs or licensing fees.</p>
+                        <span class="badge badge-data" style="margin-top: 0.5rem;">Ready to Pilot</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Importance -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Why This Matters</h2>
+                
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem; color: #333;">
+                        Generative AI is transforming how we create and manipulate visual content. This project demonstrates practical mastery of deep learning fundamentals—building custom training loops, balancing competing objectives, and producing production-quality results. Beyond fashion, these techniques apply to medical imaging, product design, content creation, and any field where generating realistic synthetic data provides value.
+                    </p>
+                    
+                    <ul class="importance-list">
+                        <li class="importance-item">
+                            <div class="importance-icon">
+                                <img src="assets/icons/speed.png" alt="Speed icon">
+                            </div>
+                            <div class="importance-content">
+                                <strong>Accelerates Creative Workflows</strong>
+                                <span>Designers can iterate on hundreds of variations in minutes instead of waiting days for physical samples.</span>
+                            </div>
+                        </li>
+                        <li class="importance-item">
+                            <div class="importance-icon">
+                                <img src="assets/icons/cost-reduction.png" alt="Cost reduction icon">
+                            </div>
+                            <div class="importance-content">
+                                <strong>Reduces Production Costs</strong>
+                                <span>Eliminate expensive photoshoots, studio time, and licensing fees by generating synthetic assets on demand.</span>
+                            </div>
+                        </li>
+                        <li class="importance-item">
+                            <div class="importance-icon">
+                                <img src="assets/icons/scalability.png" alt="Scalability icon">
+                            </div>
+                            <div class="importance-content">
+                                <strong>Scales Without Limits</strong>
+                                <span>Generate millions of unique images with minimal compute cost, enabling massive data augmentation and personalization.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Used -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Tools & Technologies</h2>
+                
+                <div class="expertise-grid" style="max-width: 900px; margin: 0 auto;">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/GCollab.png" alt="Google Colab Logo">
+                        </div>
+                        <h3>Python & Google Colab</h3>
+                        <p>Fast prototyping with reproducible notebooks and free GPU access for training deep learning models.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/tensorflow.png" alt="TensorFlow Logo">
+                        </div>
+                        <h3>TensorFlow & Keras</h3>
+                        <p>Industry-standard deep learning framework with high-level APIs for building and training neural networks efficiently.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/numpy.png" alt="NumPy Logo">
+                        </div>
+                        <h3>NumPy & Matplotlib</h3>
+                        <p>Essential tools for numerical computing and creating clear visualizations to monitor training progress.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/fashion-mnist.png" alt="Fashion MNIST Logo">
+                        </div>
+                        <h3>Fashion MNIST Dataset</h3>
+                        <p>Benchmark dataset with 60,000 grayscale images across 10 fashion categories, perfect for testing generative models.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/github.png" alt="GitHub Logo">
+                        </div>
+                        <h3>Git & GitHub</h3>
+                        <p>Version control and collaboration tools to track changes, share code, and document the development process.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <img src="assets/logos/custom-code.png" alt="Custom Code Logo">
+                        </div>
+                        <h3>Custom Training Loops</h3>
+                        <p>Hand-built adversarial training logic using TensorFlow's GradientTape for precise control over model updates.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colab Gallery -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Development Journey</h2>
+                <p style="text-align: center; max-width: 700px; margin: 0 auto 3rem; color: #666; font-size: 1.05rem;">
+                    A visual walkthrough of the Colab notebook showing key stages from setup to final results.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-01.png" alt="Google Colab notebook setup" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-setup">SETUP</span>
+                            <p style="margin: 0;"><strong>Notebook Setup</strong> — Project goal, dataset links, and environment are loaded for a clean start.</p>
+                        </figcaption>
+                    </figure>
+                    
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-02.png" alt="Data visualization" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-data">DATA</span>
+                            <p style="margin: 0;"><strong>Data Preview</strong> — A quick look at the input distribution to catch obvious issues early.</p>
+                        </figcaption>
+                    </figure>
+                    
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-03.png" alt="Neural network architecture" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-architecture">ARCHITECTURE</span>
+                            <p style="margin: 0;"><strong>Generator Network</strong> — Building the model that transforms random noise into realistic fashion images.</p>
+                        </figcaption>
+                    </figure>
+                    
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-04.png" alt="Training loss curves" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-training">TRAINING</span>
+                            <p style="margin: 0;"><strong>Training Curves</strong> — Loss stabilizes and shows healthy learning without mode collapse.</p>
+                        </figcaption>
+                    </figure>
+                    
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-05.png" alt="Generated fashion images" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-results">RESULTS</span>
+                            <p style="margin: 0;"><strong>Generated Images</strong> — High-quality fashion items created from random noise after 2000 epochs.</p>
+                        </figcaption>
+                    </figure>
+                    
+                    <figure class="project-card-detailed" style="margin: 0;">
+                        <div class="project-image">
+                            <img src="assets/colab/colab-06.png" alt="Model export code" loading="lazy" decoding="async">
+                        </div>
+                        <figcaption class="project-info">
+                            <span class="badge badge-deployment">DEPLOYMENT</span>
+                            <p style="margin: 0;"><strong>Export & Reuse</strong> — Saved artifacts make it easy to reuse the model in production.</p>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Work -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">What I'd Build Next</h2>
+                
+                <ul class="future-list">
+                    <li class="future-item">
+                        <h3>Conditional GAN Implementation</h3>
+                        <p>Add category labels so users can specify exactly what type of fashion item to generate. This gives more control over outputs and makes the system more practical for real applications.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Higher Resolution Outputs</h3>
+                        <p>Scale up from 28×28 grayscale to 256×256 full-color images using Progressive GAN or StyleGAN architectures. This would produce commercial-quality fashion visualizations.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Interactive Web Interface</h3>
+                        <p>Build a simple web app where users can adjust latent space sliders to explore different style variations in real-time. Deploy using TensorFlow.js for client-side inference.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Quality Metrics & Monitoring</h3>
+                        <p>Implement Inception Score (IS) and Fréchet Inception Distance (FID) to quantitatively measure image quality and diversity. Add automated monitoring to detect mode collapse early.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Transfer to Real Fashion Dataset</h3>
+                        <p>Train on a real fashion photography dataset like DeepFashion to generate photorealistic clothing on models. This requires more compute but would produce outputs suitable for actual product mockups.</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Quick Metrics -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Key Metrics</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto;">
+                    <div class="expertise-card">
+                        <span class="stat-value">~45 min</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Training Time</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Complete training (2000 epochs) on Google Colab's free Tesla K80 GPU</p>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <span class="stat-value accent">2.16M</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Model Parameters</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Generator network size — compact enough for deployment while maintaining quality</p>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <span class="stat-value">~8 MB</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Model Size</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Saved generator weights in HDF5 format — easily portable and deployable</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="project-section cta">
+            <div class="cta-container">
+                <h2>Interested in This Project?</h2>
+                <p>I'm always happy to discuss the technical details, share code, or explore how similar techniques could apply to your challenges.</p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/yourusername/fashion-gan" class="btn" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View Code on GitHub
+                    </a>
+                    <a href="../index.html#contact" class="btn" style="background: white; color: #667eea;">💬 Get in Touch</a>
+                    <a href="../index.html#portfolio" class="btn" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white;">← See More Projects</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="project-footer">
+        <div class="project-footer__container">
+            <div class="project-footer__content">
+                <p class="project-footer__copyright">© 2024 Your Name. Built with TensorFlow & deployed with ❤️</p>
+                
+                <div class="project-footer__links">
+                    <a href="../index.html" class="project-footer__link">Home</a>
+                    <a href="../index.html#portfolio" class="project-footer__link">All Projects</a>
+                    <a href="../index.html#contact" class="project-footer__link">Contact</a>
+                </div>
+                
+                <div class="project-footer__social">
+                    <a href="https://github.com/yourusername" class="project-footer__social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/yourprofile" class="project-footer__social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.video-tabs__button');
+            const tabPanels = document.querySelectorAll('.video-tabs__panel');
+            
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('video-tabs__button--active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    tabPanels.forEach(panel => {
+                        panel.classList.remove('video-tabs__panel--active');
+                        panel.hidden = true;
+                    });
+                    
+                    button.classList.add('video-tabs__button--active');
+                    button.setAttribute('aria-selected', 'true');
+                    
+                    const targetPanel = document.getElementById(button.getAttribute('aria-controls'));
+                    if (targetPanel) {
+                        targetPanel.classList.add('video-tabs__panel--active');
+                        targetPanel.hidden = false;
+                    }
+                });
+                
+                button.addEventListener('keydown', (e) => {
+                    let newIndex = index;
+                    if (e.key === 'ArrowRight') {
+                        newIndex = (index + 1) % tabButtons.length;
+                        e.preventDefault();
+                    } else if (e.key === 'ArrowLeft') {
+                        newIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+                        e.preventDefault();
+                    }
+                    if (newIndex !== index) {
+                        tabButtons[newIndex].focus();
+                        tabButtons[newIndex].click();
+                    }
+                });
+            });
+            
+            // Key moments video seeking
+            const video = document.getElementById('demo-video');
+            const keyMoments = document.querySelectorAll('.key-moment');
+            
+            if (video) {
+                keyMoments.forEach(moment => {
+                    moment.addEventListener('click', () => {
+                        const timeString = moment.querySelector('.key-moment__time').textContent;
+                        const timeParts = timeString.split(':');
+                        const seconds = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+                        
+                        tabButtons[0].click();
+                        video.currentTime = seconds;
+                        video.play();
+                        
+                        document.getElementById('video-demo').scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    });
+                });
+            }
+            
+            // Smooth scroll for CTA button
+            const ctaButtons = document.querySelectorAll('.project-hero__cta[href="#video-demo"]');
+            ctaButtons.forEach(ctaButton => {
+                ctaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('video-demo').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Background video error handling and fallback
+            const bgVideo = document.querySelector('.project-hero__video-bg');
+            if (bgVideo) {
+                bgVideo.addEventListener('error', function(e) {
+                    console.log('Background video failed to load, using gradient fallback');
+                    this.style.display = 'none';
+                });
+                
+                // Try to play the video (some browsers require user interaction)
+                const playPromise = bgVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('Autoplay prevented, video will show gradient fallback');
+                    });
+                }
+            }
+            
+            // Demo video error handling
+            const demoVideo = document.getElementById('demo-video');
+            if (demoVideo) {
+                demoVideo.addEventListener('error', function(e) {
+                    console.error('Demo video failed to load');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; padding: 2rem;';
+                    errorMsg.innerHTML = '<p style="font-size: 1.2rem; margin-bottom: 1rem;">Video cannot be loaded</p><p style="font-size: 0.9rem; opacity: 0.8;">Please check the video file path and format</p>';
+                    this.parentElement.appendChild(errorMsg);
+                });
+                
+                demoVideo.addEventListener('loadeddata', function() {
+                    console.log('Demo video loaded successfully');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

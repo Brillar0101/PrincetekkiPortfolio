@@ -4,29 +4,29 @@
 // Configuration object: Set to true to show project, false to hide it
 const PROJECT_VISIBILITY_CONFIG = {
     embedded: {
-        "Smart Weather Monitoring System": true,     // Set to true for real projects
-        "Smart Home Controller": true,              // Set to false to hide placeholder projects
+        "Smart Weather Monitoring System": false,     // Set to true for real projects
+        "Smart Home Controller": false,              // Set to false to hide placeholder projects
         "Fitness Tracker Device": false,
         "Motor Control System": false,
         "Smart Security Gateway": false
     },
     gaming: {
-        "Custom Arcade Console": true,               // Set to true for real projects
+        "Custom Arcade Console": false,               // Set to true for real projects
         "Haptic VR Controller": false,
         "LED Matrix Gaming Board": false,
         "DIY Racing Simulator Rig": false,
         "Portable Gaming Device": false
     },
     pcb: {
-        "Multi-Rail Power Supply": true,             // Set to true for real projects
+        "Multi-Rail Power Supply": false,             // Set to true for real projects
         "2.4GHz Transceiver Board": false,
         "Multi-Sensor Interface PCB": false,
         "Class-D Audio Amplifier": false,
         "USB-C Development Board": false
     },
     vision: {
-        "Tennis Analysis System": true,    // All set to false as examples
-        "Autonomous Drone Navigation": false,
+        "Tennis Analysis System": false,    // All set to false as examples
+        "Autonomous Drone Navigation": true,
         "Industrial Inspection System": false,
         "Hand Gesture Recognition": false,
         "Intelligent Parking System": false

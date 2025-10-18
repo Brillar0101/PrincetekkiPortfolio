@@ -18,21 +18,16 @@
     <meta name="twitter:description" content="From raw match footage to trusted stats—automatically.">
     <meta name="twitter:image" content="assets/hero_poster.jpg">
     
-    <!-- Preconnect to Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            /* Using your existing color scheme from portfolio */
+            /* Color scheme matching portfolio */
             --primary: #667eea;
             --secondary: #764ba2;
             --accent: #ffa726;
             --dark: #333333;
             --light: #ffffff;
             
-            /* Background gradients matching your portfolio */
+            /* Background gradients */
             --hero-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --card-gradient: linear-gradient(45deg, #667eea, #764ba2);
             --surface-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -55,7 +50,6 @@
             --shadow-strong: rgba(0, 0, 0, 0.3);
         }
 
-        /* Base styles using your portfolio's approach */
         * {
             margin: 0;
             padding: 0;
@@ -64,7 +58,6 @@
 
         html {
             scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
         }
 
         body {
@@ -76,7 +69,6 @@
             overflow-x: hidden;
         }
 
-        /* Typography matching your portfolio */
         h1, h2, h3, h4, h5, h6 {
             font-weight: 700;
             line-height: 1.2;
@@ -113,7 +105,7 @@
             font-size: 0.9em;
         }
 
-        /* Navigation matching your existing nav style */
+        /* Navigation */
         .nav {
             position: fixed;
             top: 0;
@@ -154,7 +146,6 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
-            position: relative;
         }
 
         .nav-links a:hover {
@@ -171,11 +162,10 @@
             background: var(--primary);
         }
 
-        /* Sections using your portfolio's structure */
+        /* Sections */
         .section {
             min-height: 100vh;
             padding: 6rem 2rem;
-            scroll-snap-align: start;
         }
 
         .section:nth-child(even) {
@@ -196,7 +186,7 @@
             text-align: center;
         }
 
-        /* Hero section matching your hero style */
+        /* Hero section */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -261,7 +251,7 @@
             margin-bottom: 4rem;
         }
 
-        /* Button styling matching your existing buttons */
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -328,7 +318,7 @@
             background: rgba(0, 0, 0, 0.7);
         }
 
-        /* Tech chips using your card styling approach */
+        /* Tech chips */
         .tech-chips {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -378,7 +368,7 @@
             margin: 0;
         }
 
-        /* KPI badges with gradient styling */
+        /* KPI badges */
         .kpi-badges {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -413,7 +403,7 @@
             opacity: 0.9;
         }
 
-        /* Cards matching your project card style */
+        /* Cards */
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -457,31 +447,155 @@
             font-size: 1.3rem;
         }
 
-        /* Tech Section Specific Styles */
-        .tech-architecture {
+        /* System Architecture Flow */
+        .system-architecture {
             margin: 3rem 0;
         }
 
-        .architecture-diagram {
+        .architecture-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .flow-stage {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: transform 0.3s ease;
+        }
+
+        .flow-stage:hover {
+            transform: translateY(-2px);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stage-header h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .stage-badge {
+            background: var(--primary);
+            color: var(--text-on-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stage-badge.perception {
+            background: var(--accent);
+        }
+
+        .stage-badge.geometric {
+            background: #10B981;
+        }
+
+        .stage-badge.temporal {
+            background: #F59E0B;
+        }
+
+        .stage-badge.rendering {
+            background: #8B5CF6;
+        }
+
+        .stage-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .perception-models {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .model-item {
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Implementation Details */
+        .implementation-details {
+            margin: 4rem 0;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .detail-section {
+            background: var(--surface-white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px var(--shadow-light);
+        }
+
+        .detail-section h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Data Contracts */
+        .data-contracts {
+            margin: 4rem 0;
+        }
+
+        .contracts-list {
             background: var(--surface-white);
             border-radius: 15px;
             padding: 2rem;
             box-shadow: 0 10px 30px var(--shadow-light);
+            margin-top: 2rem;
         }
 
-        .arch-placeholder {
-            width: 100%;
-            height: 200px;
-            background: var(--surface-light);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            border: 2px dashed var(--border-light);
+        .contract-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--surface-light);
+            font-size: 0.9rem;
         }
 
+        .contract-item:last-child {
+            border-bottom: none;
+        }
+
+        .contract-item strong {
+            color: var(--text-primary);
+        }
+
+        .contract-item code {
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Model Details */
         .model-details {
             margin: 4rem 0;
         }
@@ -704,227 +818,6 @@
             color: #50fa7b;
         }
 
-        /* Detailed Tech Stack */
-        .tech-stack-detailed {
-            background: var(--surface-white);
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px var(--shadow-light);
-            text-align: left;
-            max-width: 800px;
-            margin: 2rem auto;
-        }
-
-        .stack-category {
-            margin-bottom: 2rem;
-        }
-
-        .stack-category:last-child {
-            margin-bottom: 0;
-        }
-
-        .stack-category h4 {
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .stack-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .tech-badge-detailed {
-            background: var(--surface-light);
-            color: var(--text-primary);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid var(--border-light);
-            transition: all 0.3s ease;
-        }
-
-        .tech-badge-detailed:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px var(--shadow-light);
-        }
-
-        .tech-badge-detailed.primary {
-            background: var(--primary);
-            color: var(--text-on-dark);
-            border-color: var(--primary);
-        }
-
-        .tech-badge-detailed.accent {
-            background: var(--accent);
-            color: var(--text-on-dark);
-            border-color: var(--accent);
-        }
-
-        .stack-note {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .stack-note code {
-            font-size: 0.8rem;
-            padding: 0.1em 0.3em;
-        }
-
-        /* System Architecture Flow */
-        .system-architecture {
-            margin: 3rem 0;
-        }
-
-        .architecture-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .flow-stage {
-            background: var(--surface-white);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px var(--shadow-light);
-            transition: transform 0.3s ease;
-        }
-
-        .flow-stage:hover {
-            transform: translateY(-2px);
-        }
-
-        .stage-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .stage-header h4 {
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            margin: 0;
-        }
-
-        .stage-badge {
-            background: var(--primary);
-            color: var(--text-on-dark);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .stage-badge.perception {
-            background: var(--accent);
-        }
-
-        .stage-badge.geometric {
-            background: #10B981;
-        }
-
-        .stage-badge.temporal {
-            background: #F59E0B;
-        }
-
-        .stage-badge.rendering {
-            background: #8B5CF6;
-        }
-
-        .stage-content p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .perception-models {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .model-item {
-            padding: 0.75rem;
-            background: var(--surface-light);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
-        /* Implementation Details */
-        .implementation-details {
-            margin: 4rem 0;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .detail-section {
-            background: var(--surface-white);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px var(--shadow-light);
-        }
-
-        .detail-section h4 {
-            color: var(--primary);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-        }
-
-        .detail-content p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* Data Contracts */
-        .data-contracts {
-            margin: 4rem 0;
-        }
-
-        .contracts-list {
-            background: var(--surface-white);
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px var(--shadow-light);
-            margin-top: 2rem;
-        }
-
-        .contract-item {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--surface-light);
-            font-size: 0.9rem;
-        }
-
-        .contract-item:last-child {
-            border-bottom: none;
-        }
-
-        .contract-item strong {
-            color: var(--text-primary);
-        }
-
-        .contract-item code {
-            margin-left: 0.5rem;
-            font-size: 0.85rem;
-        }
-
         /* Process Steps */
         .process-steps {
             display: grid;
@@ -937,17 +830,17 @@
             background: white;
             border-radius: 0.75rem;
             overflow: hidden;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .step-image {
             width: 100%;
             height: 150px;
-            background: var(--gray-100);
+            background: var(--surface-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--gray-500);
+            color: var(--text-muted);
             font-size: 0.875rem;
         }
 
@@ -958,37 +851,12 @@
         .step h4 {
             font-size: 1rem;
             margin-bottom: 0.5rem;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .step p {
             font-size: 0.875rem;
             margin: 0;
-        }
-
-        /* Code Block */
-        .code-block {
-            background: var(--gray-900);
-            color: var(--gray-100);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin: 2rem 0;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            overflow-x: auto;
-        }
-
-        .code-block .comment {
-            color: var(--gray-400);
-        }
-
-        .code-block .keyword {
-            color: #60A5FA;
-        }
-
-        .code-block .string {
-            color: #34D399;
         }
 
         /* Tip Strip */
@@ -1003,7 +871,7 @@
         .tip-strip p {
             margin: 0;
             font-size: 0.95rem;
-            color: var(--gray-700);
+            color: var(--text-primary);
         }
 
         /* Results Charts */
@@ -1011,7 +879,7 @@
             background: white;
             border-radius: 0.75rem;
             padding: 1.5rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
             text-align: center;
         }
@@ -1019,12 +887,12 @@
         .chart-placeholder {
             width: 100%;
             height: 300px;
-            background: var(--gray-100);
+            background: var(--surface-light);
             border-radius: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--gray-500);
+            color: var(--text-muted);
             margin-bottom: 1rem;
         }
 
@@ -1040,7 +908,7 @@
             background: white;
             padding: 1.5rem;
             border-radius: 0.75rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .challenge-icon {
@@ -1058,7 +926,7 @@
 
         .challenge h4 {
             margin-bottom: 0.75rem;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .challenge p {
@@ -1071,7 +939,7 @@
             background: white;
             border-radius: 0.75rem;
             padding: 2rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             margin: 3rem 0;
         }
 
@@ -1086,7 +954,7 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem;
-            background: var(--gray-50);
+            background: var(--surface-light);
             border-radius: 0.5rem;
         }
 
@@ -1102,24 +970,6 @@
             font-size: 0.75rem;
         }
 
-        /* Tech Stack Badges */
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-
-        .tech-badge {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
         /* CTA Row */
         .cta-row {
             text-align: center;
@@ -1131,38 +981,6 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-        }
-
-        /* Attributions */
-        .attributions {
-            background: var(--gray-50);
-            padding: 3rem 0;
-            border-top: 1px solid var(--gray-200);
-        }
-
-        .attributions h3 {
-            margin-bottom: 2rem;
-            color: var(--gray-600);
-        }
-
-        .attribution-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        .attribution {
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-
-        .attribution a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .attribution a:hover {
-            text-decoration: underline;
         }
 
         /* Mobile Responsive */
@@ -1211,7 +1029,6 @@
         @media (prefers-reduced-motion: reduce) {
             html {
                 scroll-behavior: auto;
-                scroll-snap-type: none;
             }
 
             .hero-video {
@@ -1237,30 +1054,11 @@
             outline-offset: 2px;
         }
 
-        /* Smooth animations */
-        .card,
-        .chip,
-        .badge {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover,
-        .chip:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Section spacing */
-        .section + .section {
-            border-top: 1px solid var(--gray-200);
-        }
-
         /* Utilities */
         .mt-4 { margin-top: 2rem; }
         .mb-4 { margin-bottom: 2rem; }
         .text-sm { font-size: 0.875rem; }
         .text-lg { font-size: 1.125rem; }
-        .font-mono { font-family: 'IBM Plex Mono', monospace; }
     </style>
 </head>
 <body>
@@ -1333,7 +1131,6 @@
     <!-- Overview Section -->
     <section id="overview" class="section">
         <div class="container">
-            <!-- Quick Tech -->
             <div class="text-center mb-4">
                 <h2>Quick Tech Overview</h2>
                 <p class="text-lg">Four key components powering the analytics pipeline</p>
@@ -1370,7 +1167,6 @@
                 </div>
             </div>
 
-            <!-- Instant Proof KPI badges -->
             <div class="text-center mt-4 mb-4">
                 <h3>Instant Proof</h3>
             </div>
@@ -1398,28 +1194,27 @@
                 </div>
             </div>
 
-            <!-- What this page shows -->
             <div class="text-center mt-4 mb-4">
                 <h3>What this page shows</h3>
             </div>
             
             <div class="cards">
                 <div class="card">
-                    <div class="card-image">{{pipeline_diagram.png}}</div>
+                    <div class="card-image">Pipeline Diagram Placeholder</div>
                     <div class="card-content">
                         <h4>Pipeline in pictures</h4>
                         <p>Visual flow from raw frames to actionable analytics</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-image">{{before_after.png}}</div>
+                    <div class="card-image">Before/After Comparison</div>
                     <div class="card-content">
                         <h4>Before/After detection</h4>
                         <p>YOLOv8 baseline vs fine-tuned YOLOv5 performance</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-image">{{mini_court.gif}}</div>
+                    <div class="card-image">Mini-Court Animation</div>
                     <div class="card-content">
                         <h4>Mini-court overlay</h4>
                         <p>Players + ball positions over time</p>
@@ -1761,49 +1556,49 @@
             
             <div class="process-steps">
                 <div class="step">
-                    <div class="step-image">{{players_detect.png}}</div>
+                    <div class="step-image">Players Detection Visualization</div>
                     <div class="step-content">
                         <h4>Detect & Track Players</h4>
                         <p>YOLOv8 track(persist=True) keeps IDs stable across frames</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{ball_detect.png}}</div>
+                    <div class="step-image">Ball Detection Visualization</div>
                     <div class="step-content">
                         <h4>Fine-tuned Ball Detector</h4>
                         <p>YOLOv5 (conf ~0.15–0.20) lifts recall on fast, tiny ball</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{interpolation_plot.png}}</div>
+                    <div class="step-image">Interpolation Plot</div>
                     <div class="step-content">
                         <h4>Interpolate Gaps</h4>
                         <p>pandas interpolate() + backfill → near-continuous ball path</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{keypoints_overlay.png}}</div>
+                    <div class="step-image">Keypoints Overlay</div>
                     <div class="step-content">
                         <h4>Court Keypoints (14)</h4>
                         <p>ResNet-50 head regresses (x,y) pairs at 224×224; remapped to source size</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{court_dims.png}}</div>
+                    <div class="step-image">Court Dimensions</div>
                     <div class="step-content">
                         <h4>Pixel→Meter Mapping</h4>
                         <p>Uses official dimensions (doubles width 10.97 m, singles 8.23 m, half-court 11.88 m)</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{mini_court.gif}}</div>
+                    <div class="step-image">Mini-Court Animation</div>
                     <div class="step-content">
                         <h4>Mini-Court Projection</h4>
                         <p>Anchor to nearest keypoint, convert scale, draw on compact court</p>
                     </div>
                 </div>
                 <div class="step">
-                    <div class="step-image">{{deltaY_plot.png}}</div>
+                    <div class="step-image">Delta Y Plot</div>
                     <div class="step-content">
                         <h4>Shot Detection</h4>
                         <p>ΔY sign changes with ≥25 frames persistence (+20% buffer)</p>
@@ -1811,7 +1606,6 @@
                 </div>
             </div>
 
-            <!-- Code Block -->
             <div class="code-block">
 <span class="comment"># Pseudo-loop: detect → interpolate → keypoints → project → compute speeds</span>
 <span class="keyword">for</span> frame <span class="keyword">in</span> video_frames:
@@ -1841,19 +1635,19 @@
             <!-- Visual Results -->
             <div class="chart-container">
                 <h3>Shot Timeline</h3>
-                <div class="chart-placeholder">{{shot_timeline.png}}</div>
+                <div class="chart-placeholder">Shot Timeline Chart Placeholder</div>
                 <p class="text-sm">Vertical markers at frames 11, 58, 95, 131, 182 with ball speeds (33, 43 km/h)</p>
             </div>
 
             <div class="chart-container">
                 <h3>Coverage Analysis</h3>
-                <div class="chart-placeholder">{{coverage_bars.png}}</div>
+                <div class="chart-placeholder">Coverage Analysis Chart Placeholder</div>
                 <p class="text-sm">Per-frame bars showing detected vs interpolated vs missing data</p>
             </div>
 
             <div class="chart-container">
                 <h3>Mini-Court Snapshots</h3>
-                <div class="chart-placeholder">{{mini_frames.png}}</div>
+                <div class="chart-placeholder">Mini-Court Snapshots Placeholder</div>
                 <p class="text-sm">Three frames showing players/ball relative positions on court</p>
             </div>
 
@@ -1947,63 +1741,6 @@
                 </div>
             </div>
 
-            <!-- Tech Stack -->
-            <div class="mt-4 mb-4">
-                <h3>Complete Tech Stack</h3>
-                <div class="tech-stack-detailed">
-                    <div class="stack-category">
-                        <h4>Languages</h4>
-                        <div class="stack-items">
-                            <span class="tech-badge-detailed">Python (3.x)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stack-category">
-                        <h4>ML / CV Frameworks</h4>
-                        <div class="stack-items">
-                            <span class="tech-badge-detailed primary">Ultralytics YOLOv8</span>
-                            <span class="tech-badge-detailed primary">Ultralytics YOLOv5 (fine-tuned)</span>
-                            <span class="tech-badge-detailed">PyTorch + TorchVision</span>
-                        </div>
-                        <p class="stack-note">YOLOv8: player detection & tracking with <code>track(persist=True)</code><br>
-                        YOLOv5: high-recall tennis ball detection<br>
-                        PyTorch: ResNet-50 backbone with custom linear head for 14 court keypoints</p>
-                    </div>
-                    
-                    <div class="stack-category">
-                        <h4>Data & Image/Video Processing</h4>
-                        <div class="stack-items">
-                            <span class="tech-badge-detailed">OpenCV (cv2)</span>
-                            <span class="tech-badge-detailed">pandas</span>
-                            <span class="tech-badge-detailed">NumPy</span>
-                        </div>
-                        <p class="stack-note">OpenCV: video read/write (MJPG @ 24 fps), overlays, color/geometry ops<br>
-                        pandas: DataFrames, <code>interpolate()</code>, <code>ffill()</code> for gap filling<br>
-                        NumPy: numeric ops and array handling</p>
-                    </div>
-                    
-                    <div class="stack-category">
-                        <h4>Visualization / Analysis</h4>
-                        <div class="stack-items">
-                            <span class="tech-badge-detailed">Matplotlib</span>
-                        </div>
-                        <p class="stack-note">Quick plots: trajectory, ΔY timeline, coverage analysis</p>
-                    </div>
-                    
-                    <div class="stack-category">
-                        <h4>Training / Ops / Data Sources</h4>
-                        <div class="stack-items">
-                            <span class="tech-badge-detailed accent">Google Colab</span>
-                            <span class="tech-badge-detailed accent">Roboflow</span>
-                            <span class="tech-badge-detailed">wget</span>
-                        </div>
-                        <p class="stack-note">Colab: GPU training runs<br>
-                        Roboflow: dataset hosting/download for ball detection<br>
-                        wget: dataset retrieval in notebooks</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- CTA Row -->
             <div class="cta-row">
                 <div class="cta-buttons">
@@ -2019,34 +1756,6 @@
                         </svg>
                         View Results
                     </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Attributions Section -->
-    <section id="attributions" class="attributions">
-        <div class="container text-center">
-            <h3>Attributions</h3>
-            
-            <div class="attribution-list">
-                <div class="attribution">
-                    <strong><a href="https://ultralytics.com/" target="_blank">Ultralytics YOLO</a></strong> — detection & tracking framework (players, ball)
-                </div>
-                <div class="attribution">
-                    <strong><a href="https://pytorch.org/vision/stable/models.html" target="_blank">ResNet-50 (TorchVision)</a></strong> — backbone for keypoint regression head
-                </div>
-                <div class="attribution">
-                    <strong><a href="https://roboflow.com/" target="_blank">Tennis ball dataset (Roboflow)</a></strong> — ~578 labeled images (428 train) for fine-tuning
-                </div>
-                <div class="attribution">
-                    <strong>Court keypoints dataset/repo</strong> — 14-point broadcast-angle annotations and training reference
-                </div>
-                <div class="attribution">
-                    <strong><a href="https://www.itftennis.com/en/about-us/governance/rules-of-tennis/" target="_blank">Court dimensions</a></strong> — ITF/USTA published measurements used for pixel↔meter conversion
-                </div>
-                <div class="attribution">
-                    <strong><a href="https://fonts.google.com/specimen/Inter" target="_blank">Icons & fonts</a></strong> — Inter (Google Fonts), simple SVG line icons
                 </div>
             </div>
         </div>
@@ -2120,26 +1829,6 @@
                 }
             });
         });
-
-        // Lazy loading for images (if needed)
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.classList.remove('lazy');
-                            observer.unobserve(img);
-                        }
-                    }
-                });
-            });
-
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
-        }
 
         // Error handling for video
         if (video) {
