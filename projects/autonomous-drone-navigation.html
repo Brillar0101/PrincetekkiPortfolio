@@ -55,7 +55,7 @@
         }
         
         /* ============================================
-           HERO SECTION WITH VIDEO BACKGROUND
+           HERO SECTION WITH YOUTUBE BACKGROUND
            ============================================ */
         
         .project-hero {
@@ -68,7 +68,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
-        /* Video Background Container */
+        /* YouTube Video Background Container */
         .project-hero__video-container {
             position: absolute;
             top: 0;
@@ -79,28 +79,17 @@
             z-index: 0;
         }
         
-        /* Video Background */
+        /* YouTube iframe background */
         .project-hero__video-bg {
             position: absolute;
             top: 50%;
             left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
+            min-height: 100vh;
+            min-width: 177.77vh; /* 16:9 aspect ratio */
             transform: translateX(-50%) translateY(-50%);
-            object-fit: cover;
-        }
-        
-        /* Fallback image if video doesn't load */
-        .project-hero__fallback-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 0;
+            pointer-events: none;
         }
         
         /* Gradient overlay on top of video */
@@ -288,7 +277,7 @@
         }
         
         /* ============================================
-           VIDEO FRAME
+           YOUTUBE VIDEO FRAME
            ============================================ */
         
         .project-demo__frame {
@@ -296,18 +285,21 @@
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 15px;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
             overflow: hidden;
+            border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #000;
         }
         
         .project-demo__video {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            background: #000;
+            border: none;
         }
         
         /* ============================================
@@ -960,19 +952,18 @@
 </head>
 
 <body>
-    <!-- Header / Hero Section with Video Background -->
+    <!-- Header / Hero Section with YouTube Background -->
     <header class="project-hero" id="top">
-        <!-- Video Background Container -->
+        <!-- YouTube Video Background Container -->
         <div class="project-hero__video-container">
-            <!-- Fallback Background -->
-            <div class="project-hero__fallback-bg"></div>
-            
-            <!-- Background Video -->
-            <video class="project-hero__video-bg" autoplay muted loop playsinline preload="auto">
-                <source src="Why_Pick_Pamplin_2025_Version.mp4" type="video/mp4">
-                <source src="assets/video/hero-background.webm" type="video/webm">
-                <!-- Your browser does not support the video tag. -->
-            </video>
+            <!-- Replace YOUR_YOUTUBE_VIDEO_ID with your actual YouTube video ID -->
+            <iframe 
+                class="project-hero__video-bg"
+                src="https://www.youtube.com/watch?v=P8692LBxNBc&autoplay=1&mute=1&loop=1&playlist=P8692LBxNBc&controls=0&showinfo=0&modestbranding=1&rel=0"
+                frameborder="0"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+            </iframe>
         </div>
         
         <!-- Gradient Overlay -->
@@ -993,9 +984,9 @@
                     <span class="project-hero__cta-icon">▶</span>
                     <span>Watch the Demo</span>
                 </a>
-                <a href="https://github.com/Brillar0101/Fashion_GAN/blob/main/Fashion_GAN_Network.ipynb" class="project-hero__cta project-hero__cta--secondary" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/yourusername/fashion-gan" class="project-hero__cta project-hero__cta--secondary" target="_blank" rel="noopener noreferrer">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.071.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
                     <span>View on GitHub</span>
                 </a>
@@ -1025,41 +1016,45 @@
                         </p>
                         
                         <div class="project-demo__frame">
-                            <video id="demo-video" class="project-demo__video" controls preload="metadata">
-                                <source src="Why_Pick_Pamplin_2025_Version.mp4" type="video/mp4">
-                                <source src="assets/video/fashion-gan-demo.webm" type="video/webm">
-                                Your browser does not support the video tag.
-                            </video>
+                            <!-- Replace YOUR_DEMO_VIDEO_ID with your actual YouTube video ID -->
+                            <iframe 
+                                class="project-demo__video"
+                                src="https://www.youtube.com/watch?v=P8692LBxNBc"
+                                title="Fashion GAN Demo Video"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
                         </div>
                     </div>
                     
                     <div role="tabpanel" id="moments-panel" aria-labelledby="moments-tab" class="video-tabs__panel" hidden>
                         <ul class="key-moments">
-                            <li class="key-moment">
+                            <li class="key-moment" data-time="15">
                                 <span class="key-moment__time">00:15</span>
                                 <div class="key-moment__content">
                                     <strong>Setup & Data Loading:</strong> Installing dependencies and loading the Fashion MNIST dataset with 60,000 training images of clothing items.
                                 </div>
                             </li>
-                            <li class="key-moment">
+                            <li class="key-moment" data-time="150">
                                 <span class="key-moment__time">02:30</span>
                                 <div class="key-moment__content">
                                     <strong>Building the Generator:</strong> Creating a neural network that transforms 128 random values into realistic 28×28 fashion images through upsampling layers.
                                 </div>
                             </li>
-                            <li class="key-moment">
+                            <li class="key-moment" data-time="285">
                                 <span class="key-moment__time">04:45</span>
                                 <div class="key-moment__content">
                                     <strong>Building the Discriminator:</strong> Creating a classifier that learns to distinguish real fashion images from generated fakes.
                                 </div>
                             </li>
-                            <li class="key-moment">
+                            <li class="key-moment" data-time="440">
                                 <span class="key-moment__time">07:20</span>
                                 <div class="key-moment__content">
                                     <strong>Custom Training Loop:</strong> Implementing the adversarial training process where the generator and discriminator compete to improve each other.
                                 </div>
                             </li>
-                            <li class="key-moment">
+                            <li class="key-moment" data-time="615">
                                 <span class="key-moment__time">10:15</span>
                                 <div class="key-moment__content">
                                     <strong>Results & Generated Images:</strong> Viewing the final outputs—realistic shoes, bags, pants, and shirts generated entirely from random noise.
@@ -1230,7 +1225,7 @@
                 <div class="expertise-grid" style="max-width: 900px; margin: 0 auto;">
                     <div class="contact-card">
                         <div class="contact-icon">
-                            <img src="assets/logos/GCollab.png" alt="Google Colab Logo">
+                            <img src="assets/logos/python.png" alt="Python Logo">
                         </div>
                         <h3>Python & Google Colab</h3>
                         <p>Fast prototyping with reproducible notebooks and free GPU access for training deep learning models.</p>
@@ -1272,6 +1267,7 @@
                         <div class="contact-icon">
                             <img src="assets/logos/custom-code.png" alt="Custom Code Logo">
                         </div>
+                        <h3>Custom Training Loops</h3>
                         <h3>Custom Training Loops</h3>
                         <p>Hand-built adversarial training logic using TensorFlow's GradientTape for precise control over model updates.</p>
                     </div>
@@ -1452,7 +1448,8 @@
                     </a>
                     <a href="https://linkedin.com/in/yourprofile" class="project-footer__social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
                     </a>
                 </div>
             </div>
@@ -1504,28 +1501,27 @@
                 });
             });
             
-            // Key moments video seeking
-            const video = document.getElementById('demo-video');
+            // Key moments - open video in new tab with timestamp (since we can't control embedded YouTube player)
             const keyMoments = document.querySelectorAll('.key-moment');
-            
-            if (video) {
-                keyMoments.forEach(moment => {
-                    moment.addEventListener('click', () => {
-                        const timeString = moment.querySelector('.key-moment__time').textContent;
-                        const timeParts = timeString.split(':');
-                        const seconds = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
-                        
-                        tabButtons[0].click();
-                        video.currentTime = seconds;
-                        video.play();
-                        
-                        document.getElementById('video-demo').scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center' 
-                        });
+            keyMoments.forEach(moment => {
+                moment.addEventListener('click', () => {
+                    const time = moment.getAttribute('data-time');
+                    const videoId = 'P8692LBxNBc'; // Replace with your actual video ID
+                    const url = `https://www.youtube.com/watch?v=${videoId}&t=${time}s`;
+                    
+                    // Switch to video tab
+                    tabButtons[0].click();
+                    
+                    // Scroll to video
+                    document.getElementById('video-demo').scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
                     });
+                    
+                    // Optionally open in new tab with timestamp
+                    // window.open(url, '_blank');
                 });
-            }
+            });
             
             // Smooth scroll for CTA button
             const ctaButtons = document.querySelectorAll('.project-hero__cta[href="#video-demo"]');
@@ -1537,39 +1533,6 @@
                     });
                 });
             });
-            
-            // Background video error handling and fallback
-            const bgVideo = document.querySelector('.project-hero__video-bg');
-            if (bgVideo) {
-                bgVideo.addEventListener('error', function(e) {
-                    console.log('Background video failed to load, using gradient fallback');
-                    this.style.display = 'none';
-                });
-                
-                // Try to play the video (some browsers require user interaction)
-                const playPromise = bgVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log('Autoplay prevented, video will show gradient fallback');
-                    });
-                }
-            }
-            
-            // Demo video error handling
-            const demoVideo = document.getElementById('demo-video');
-            if (demoVideo) {
-                demoVideo.addEventListener('error', function(e) {
-                    console.error('Demo video failed to load');
-                    const errorMsg = document.createElement('div');
-                    errorMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; padding: 2rem;';
-                    errorMsg.innerHTML = '<p style="font-size: 1.2rem; margin-bottom: 1rem;">Video cannot be loaded</p><p style="font-size: 0.9rem; opacity: 0.8;">Please check the video file path and format</p>';
-                    this.parentElement.appendChild(errorMsg);
-                });
-                
-                demoVideo.addEventListener('loadeddata', function() {
-                    console.log('Demo video loaded successfully');
-                });
-            }
         });
     </script>
 </body>
