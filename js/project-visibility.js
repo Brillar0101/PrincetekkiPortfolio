@@ -26,7 +26,7 @@ const PROJECT_VISIBILITY_CONFIG = {
     },
     vision: {
         "Tennis Analysis System": false,    // All set to false as examples
-        "Autonomous Drone Navigation": true,
+        "Synthetic Fashion Generator": true,
         "Industrial Inspection System": false,
         "Hand Gesture Recognition": false,
         "Intelligent Parking System": false

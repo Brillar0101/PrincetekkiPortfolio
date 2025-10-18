@@ -26,7 +26,7 @@ const PROJECT_STATUS_CONFIG = {
     },
     vision: {
         "Tennis Analysis System": "in-progress",
-        "Autonomous Drone Navigation": "in-progress",
+        "Synthetic Fashion Generator": "in-progress",
         "Industrial Inspection System": "coming-soon",
         "Hand Gesture Recognition": "complete",
         "Intelligent Parking System": "in-progress"

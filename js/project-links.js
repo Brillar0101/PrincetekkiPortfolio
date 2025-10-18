@@ -25,7 +25,7 @@ const PROJECT_URL_MAP = {
     
     // Computer Vision
     "Tennis Analysis System": "tennis_analysis_system.html",
-    "Autonomous Drone Navigation": "autonomous-drone-navigation.html",
+    "Synthetic Fashion Generator": "synthetic_fashion_generator.html",
     "Industrial Inspection System": "industrial-inspection-system.html",
     "Hand Gesture Recognition": "hand-gesture-recognition.html",
     "Intelligent Parking System": "intelligent-parking-system.html"
