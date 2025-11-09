@@ -28,8 +28,8 @@ const PROJECT_VISIBILITY_CONFIG = {
         "Tennis Analysis System": false,    // All set to false as examples
         "Synthetic Fashion Generator": true,
         "Industrial Inspection System": false,
-        "Hand Gesture Recognition": false,
-        "Intelligent Parking System": false
+        "Hand Gesture Recognition": true,
+        "Intelligent Parking System": true
     }
 };
 

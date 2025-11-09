@@ -1,0 +1,3690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NBA 3-Second Violation detector using YOLOv8, ByteTrack, and paint mask timing. Built with Python, OpenCV, and computer vision techniques.">
+    
+    <title>3-Second Violation Detection: Basketball Computer Vision Project</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="3-Second Violation Detection: Basketball Computer Vision Project">
+    <meta property="og:description" content="Automatic detection of NBA 3-second violations using YOLOv8 and ByteTrack. Real-time player tracking with paint mask timer.">
+    <meta property="og:image" content="assets/images/3-second-og.jpg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="3-Second Violation Detection: Basketball Computer Vision Project">
+    <meta name="twitter:description" content="Automatic detection of NBA 3-second violations using YOLOv8 and ByteTrack. Real-time player tracking with paint mask timer.">
+    <meta name="twitter:image" content="assets/images/3-second-og.jpg">
+    
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "NBA 3-Second Violation Detector",
+        "description": "A computer vision project that automatically detects 3-second violations in NBA games using YOLOv8 object detection and ByteTrack for player tracking.",
+        "author": {
+            "@type": "Person",
+            "name": "Barakaeli Lawuo"
+        },
+        "keywords": "computer vision, object detection, YOLO, ByteTrack, basketball analytics, sports analytics, Python, OpenCV",
+        "programmingLanguage": "Python",
+        "runtimePlatform": "Python 3.8+"
+    }
+    </script>
+    
+    <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+        }
+        
+        /* ============================================
+           HERO SECTION WITH GRADIENT BACKGROUND
+           ============================================ */
+        
+        .project-hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Animated gradient overlay */
+        .project-hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.3) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .project-hero__content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .project-hero__title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: white;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-hero__tagline {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .project-hero__subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 2rem;
+        }
+        
+        .project-hero__cta-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .project-hero__cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            color: #667eea;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .project-hero__cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .project-hero__cta--secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .project-hero__cta--secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .project-hero__cta-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* ============================================
+           SECTIONS
+           ============================================ */
+        
+        .project-section {
+            padding: 6rem 2rem;
+        }
+        
+        .project-section__container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .project-section__title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        /* Alternating backgrounds */
+        .project-blurb {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+        }
+        
+        .project-demo {
+            background: white;
+        }
+        
+        /* ============================================
+           VIDEO TABS
+           ============================================ */
+        
+        .video-tabs {
+            margin: 0 auto;
+            max-width: 900px;
+        }
+        
+        .video-tabs__buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .video-tabs__button {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            position: relative;
+        }
+        
+        .video-tabs__button:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .video-tabs__button--active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .video-tabs__panel {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .video-tabs__panel--active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .video-intro {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        /* ============================================
+           VIDEO FRAME
+           ============================================ */
+        
+        .project-demo__frame {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #000;
+        }
+        
+        .project-demo__video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Placeholder for missing videos */
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .video-placeholder__icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .video-placeholder__text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-placeholder__subtext {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* ============================================
+           CONTENT SECTIONS
+           ============================================ */
+        
+        .project-blurb__content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .project-blurb__intro {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .project-blurb__details {
+            margin-bottom: 3rem;
+        }
+        
+        .project-blurb__details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .project-blurb__details ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .project-blurb__details li {
+            padding: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            line-height: 1.7;
+        }
+        
+        .project-blurb__specs {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .project-blurb__specs-title {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .project-blurb__specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .project-blurb__spec {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .project-blurb__spec-icon {
+            flex-shrink: 0;
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* ============================================
+           CARDS
+           ============================================ */
+        
+        .expertise-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .expertise-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .expertise-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .expertise-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .contact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .contact-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .contact-card h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* ============================================
+           GRIDS
+           ============================================ */
+        
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        /* ============================================
+           PROJECT CARDS (Gallery)
+           ============================================ */
+        
+        .project-card-detailed {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card-detailed:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .project-card-detailed .project-image {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 3rem;
+        }
+        
+        .project-card-detailed .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .project-info {
+            padding: 1.5rem;
+        }
+        
+        .project-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: #333;
+        }
+        
+        .project-info p {
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Badge styles */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-setup {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .badge-data {
+            background: rgba(255, 167, 38, 0.1);
+            color: #ffa726;
+        }
+        
+        .badge-architecture {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-training {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .badge-results {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-deployment {
+            background: rgba(255, 167, 38, 0.1);
+            color: #ffa726;
+        }
+        
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        
+        .cta {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .cta h2 {
+            color: white;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.15rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ============================================
+           FOOTER
+           ============================================ */
+        
+        .project-footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+        }
+        
+        .project-footer__container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .project-footer__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .project-footer__copyright {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+        
+        .project-footer__links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .project-footer__link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .project-footer__link:hover {
+            color: white;
+        }
+        
+        .project-footer__social {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .project-footer__social-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 8px;
+            display: inline-flex;
+        }
+        
+        .project-footer__social-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* ============================================
+           METRICS / STATS
+           ============================================ */
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .stat-value.accent {
+            color: #ffa726;
+        }
+        
+        /* ============================================
+           LIST STYLES
+           ============================================ */
+        
+        .importance-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .importance-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .importance-content strong {
+            color: #333;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .importance-content span {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Future work items */
+        .future-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .future-item {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .future-item:nth-child(even) {
+            border-left-color: #ffa726;
+        }
+        
+        .future-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .future-item h3 {
+            color: #333;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+        
+        .future-item p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* Code sample controls */
+        .code-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .code-tab {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .code-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .code-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .code-timer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f8f9ff;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .code-timer-bar {
+            width: 60px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .code-timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 100%;
+            transform-origin: left;
+            transition: transform 0.1s linear;
+        }
+        
+        /* Typewriter effect */
+        .code-content {
+            display: block;
+            white-space: pre;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .code-content.typing::after {
+            content: '▋';
+            animation: blink 0.7s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* ============================================
+           ADVANCED PARTICLE SYSTEM
+           ============================================ */
+        
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.8), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 15s linear infinite;
+            opacity: 0;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* ============================================
+           CUSTOM CURSOR SYSTEM
+           ============================================ */
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+        
+        .custom-cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+        }
+        
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+        
+        .custom-cursor.click {
+            animation: cursorClick 0.3s ease;
+        }
+        
+        @keyframes cursorClick {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+        }
+        
+        .cursor-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.6;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        /* ============================================
+           ANIMATED GRADIENT BACKGROUND
+           ============================================ */
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #4facfe 75%, 
+                #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            opacity: 0.05;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        
+        .animated-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 80% 50%, rgba(118, 75, 162, 0.3) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite 4s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+        }
+        
+        /* ============================================
+           ADVANCED RIPPLE EFFECTS
+           ============================================ */
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.4), transparent 70%);
+            transform: scale(0);
+            animation: rippleEffect 0.8s ease-out;
+            pointer-events: none;
+        }
+        
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* ============================================
+           MORPHING SHAPES BACKGROUND
+           ============================================ */
+        
+        .morphing-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .morph-shape {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: morphMove 20s ease-in-out infinite;
+        }
+        
+        .morph-shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+        
+        .morph-shape:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            top: 50%;
+            right: -200px;
+            animation-delay: 5s;
+        }
+        
+        .morph-shape:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            bottom: -175px;
+            left: 50%;
+            animation-delay: 10s;
+        }
+        
+        @keyframes morphMove {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                border-radius: 50%;
+            }
+            25% {
+                transform: translate(100px, -100px) rotate(90deg) scale(1.2);
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            }
+            50% {
+                transform: translate(-100px, 100px) rotate(180deg) scale(0.8);
+                border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+            }
+            75% {
+                transform: translate(100px, 100px) rotate(270deg) scale(1.1);
+                border-radius: 30% 70% 30% 70% / 70% 30% 70% 30%;
+            }
+        }
+        
+        /* ============================================
+           GLOWING TEXT EFFECTS
+           ============================================ */
+        
+        .glow-text {
+            animation: textGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes textGlow {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px rgba(102, 126, 234, 0.5),
+                    0 0 20px rgba(102, 126, 234, 0.3),
+                    0 0 30px rgba(102, 126, 234, 0.2);
+            }
+            50% {
+                text-shadow: 
+                    0 0 20px rgba(118, 75, 162, 0.7),
+                    0 0 40px rgba(118, 75, 162, 0.5),
+                    0 0 60px rgba(118, 75, 162, 0.3);
+            }
+        }
+        
+        /* ============================================
+           ADVANCED SCROLL PROGRESS INDICATOR
+           ============================================ */
+        
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 10001;
+            backdrop-filter: blur(10px);
+        }
+        
+        .scroll-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 100%;
+            animation: progressGradient 3s ease infinite;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.1s linear;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+        }
+        
+        @keyframes progressGradient {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        
+        /* ============================================
+           FLOATING ELEMENTS
+           ============================================ */
+        
+        .float-element {
+            animation: floatUpDown 4s ease-in-out infinite;
+        }
+        
+        .float-element:nth-child(odd) {
+            animation-delay: 2s;
+        }
+        
+        @keyframes floatUpDown {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+        
+        /* ============================================
+           MATRIX RAIN EFFECT (BACKGROUND)
+           ============================================ */
+        
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #667eea;
+            white-space: nowrap;
+            animation: matrixFall 10s linear infinite;
+        }
+        
+        @keyframes matrixFall {
+            to {
+                transform: translateY(200vh);
+            }
+        }
+        
+        /* ============================================
+           HOLOGRAPHIC CARD EFFECT
+           ============================================ */
+        
+        .holographic {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .holographic::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: holoRotate 3s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes holoRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* ============================================
+           NEON GLOW BORDERS
+           ============================================ */
+        
+        .neon-border {
+            position: relative;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, #667eea, #764ba2) border-box;
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 5px rgba(102, 126, 234, 0.5),
+                    0 0 10px rgba(102, 126, 234, 0.3),
+                    inset 0 0 5px rgba(102, 126, 234, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 15px rgba(118, 75, 162, 0.8),
+                    0 0 30px rgba(118, 75, 162, 0.5),
+                    inset 0 0 10px rgba(118, 75, 162, 0.3);
+            }
+        }
+        
+        /* ============================================
+           ADVANCED TOOLTIP SYSTEM
+           ============================================ */
+        
+        .advanced-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 10002;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .advanced-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .advanced-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(118, 75, 162, 0.95);
+        }
+        .process-gallery {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            perspective: 1500px; /* 3D perspective for cards */
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            --stagger-delay: 0.1s;
+        }
+        
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            opacity: 0;
+            transform: translateY(50px) rotateX(-10deg);
+            animation: fadeInUp 0.8s ease forwards;
+            will-change: transform, opacity;
+        }
+        
+        .gallery-item:nth-child(1) { animation-delay: 0.1s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.6s; }
+        .gallery-item:nth-child(7) { animation-delay: 0.7s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-15px) scale(1.03) rotateY(5deg);
+            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.3);
+        }
+        
+        .gallery-item:hover::before {
+            opacity: 1;
+        }
+        
+        .gallery-item.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.05);
+        }
+        
+        .gallery-image::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .gallery-item:hover .gallery-image::after {
+            transform: translateX(100%);
+        }
+        
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.3s ease;
+            backface-visibility: hidden;
+        }
+        
+        .gallery-item:hover .gallery-image img {
+            filter: brightness(1.1) contrast(1.05);
+        }
+        
+        .gallery-placeholder {
+            font-size: 4rem;
+            opacity: 0.3;
+            transition: all 0.4s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .gallery-item:hover .gallery-placeholder {
+            opacity: 0.5;
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .gallery-caption {
+            padding: 1.5rem;
+            position: relative;
+            z-index: 2;
+            background: white;
+            transition: background 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            background: linear-gradient(to bottom, white, #f8f9ff);
+        }
+        
+        .gallery-step {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .gallery-item:hover .gallery-step {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        }
+        
+        .gallery-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-title {
+            color: #667eea;
+        }
+        
+        .gallery-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Enhanced Lightbox with animations */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            padding: 2rem;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(10px);
+            }
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotateX(20deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+        
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease;
+        }
+        
+        .lightbox-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .lightbox-close:hover {
+            transform: scale(1.15) rotate(90deg);
+            background: #ff6b6b;
+            color: white;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.5);
+        }
+        
+        .lightbox-close:active {
+            transform: scale(0.95) rotate(90deg);
+        }
+        
+        .lightbox-caption {
+            text-align: center;
+            color: white;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeInText 0.6s ease 0.3s forwards;
+        }
+        
+        @keyframes fadeInText {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Navigation arrows in lightbox */
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .lightbox-nav:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        .lightbox-nav.prev {
+            left: 20px;
+        }
+        
+        .lightbox-nav.next {
+            right: 20px;
+        }
+        
+        /* Loading indicator */
+        .lightbox-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Parallax effect container */
+        .gallery-parallax {
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        
+        @media (max-width: 768px) {
+            .project-section {
+                padding: 4rem 1rem;
+            }
+        
+            .project-hero__title {
+                font-size: 2rem;
+            }
+        
+            .project-hero__tagline {
+                font-size: 1rem;
+            }
+        
+            .project-hero__cta {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+            
+            .project-hero__cta-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .project-hero__cta {
+                width: 100%;
+                justify-content: center;
+            }
+        
+            .video-tabs__buttons {
+                flex-direction: column;
+                gap: 0;
+                border-bottom: none;
+            }
+        
+            .video-tabs__button {
+                padding: 0.75rem 1rem;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+                border-left: 3px solid transparent;
+                margin-bottom: 0;
+            }
+        
+            .video-tabs__button--active {
+                border-left-color: #667eea;
+                background: #f8f9ff;
+            }
+        
+            .expertise-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        
+            .project-footer__content {
+                flex-direction: column;
+                text-align: center;
+            }
+        
+            .project-footer__links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        
+            .cta {
+                padding: 3rem 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .contact-icon {
+                width: 70px;
+                height: 70px;
+            }
+        
+            .project-blurb__spec {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* ============================================
+           ACCESSIBILITY
+           ============================================ */
+        
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Focus styles */
+        *:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+        
+        button:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- Advanced UI Elements -->
+    <div class="particle-container" id="particle-container"></div>
+    <div class="custom-cursor" id="custom-cursor"></div>
+    <div class="animated-bg"></div>
+    <div class="morphing-shapes">
+        <div class="morph-shape"></div>
+        <div class="morph-shape"></div>
+        <div class="morph-shape"></div>
+    </div>
+    <div class="scroll-progress">
+        <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+    </div>
+    <div class="matrix-rain" id="matrix-rain"></div>
+    <div class="advanced-tooltip" id="advanced-tooltip"></div>
+    
+    <!-- Header / Hero Section -->
+    <header class="project-hero" id="top">
+        <!-- Gradient Overlay -->
+        <div class="project-hero__overlay"></div>
+        
+        <!-- Content -->
+        <div class="project-hero__content">
+            <h1 class="project-hero__title">Automatic Detection of NBA 3‑Second Violations</h1>
+            <p class="project-hero__tagline">
+                Built a computer vision system that automatically detects 3-second violations in basketball games using real-time player tracking.
+            </p>
+            <p class="project-hero__subtitle">
+                YOLOv8 + ByteTrack + Paint Mask Timer • Python & OpenCV • 31 FPS Real-time
+            </p>
+            
+            <div class="project-hero__cta-container">
+                <a href="#video-demo" class="project-hero__cta">
+                    <span class="project-hero__cta-icon">▶</span>
+                    <span>View Demo</span>
+                </a>
+                <a href="https://github.com/BarakaLawuo/3-second-violation" class="project-hero__cta project-hero__cta--secondary" target="_blank" rel="noopener noreferrer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>View on GitHub</span>
+                </a>
+                <a href="../index.html#portfolio" class="project-hero__cta project-hero__cta--secondary">
+                    <span>← More Projects</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Video Demo Section -->
+        <section class="project-section" id="video-demo">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Project Demo</h2>
+                
+                <p class="video-intro" style="text-align: center; max-width: 700px; margin: 0 auto 2rem;">
+                    Watch the complete detection pipeline: player tracking, paint entry detection, timer countdown, and violation alerts at 3.0 seconds.
+                </p>
+                
+                <div class="project-demo__frame">
+                    <!-- Placeholder until actual video is added -->
+                    <div class="video-placeholder">
+                        <div class="video-placeholder__icon">🏀</div>
+                        <div class="video-placeholder__text">Demo Video Coming Soon</div>
+                        <div class="video-placeholder__subtext">Upload your demo to ./assets/violation-demo.mp4</div>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.95rem;">
+                    <a href="https://github.com/BarakaLawuo/3-second-violation#demo" target="_blank" style="color: #667eea;">View on GitHub →</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Project Overview -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">What This Does</h2>
+                
+                <div class="project-blurb__content">
+                    <p class="project-blurb__intro">
+                        This system automatically detects 3-second violations in NBA games by tracking when offensive players remain in the paint area for more than three seconds without attempting a shot. I built a complete computer vision pipeline that combines YOLOv8 object detection with ByteTrack multi-object tracking, court geometry analysis, and finite-state timer logic. The system processes game footage at 31 FPS, achieving 89% recall—an 11 percentage point improvement over YOLO-only detection.
+                    </p>
+                    
+                    <div class="project-blurb__details">
+                        <h3>Technical Pipeline</h3>
+                        <ul>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Player Detection:</strong> YOLOv8 identifies all players in each frame with bounding boxes, filtering by confidence and applying non-maximum suppression.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>ID Assignment:</strong> ByteTrack assigns stable IDs to each player across frames, maintaining identity through occlusions and camera motion.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Geometry Check:</strong> Extract player centroids from bounding boxes and test against a polygon mask defining the paint area.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Timer State Machine:</strong> Per-player finite-state timer tracks time in paint, resets on exit or shot detection, raises violation at ≥3.0s.</span>
+                            </li>
+                            <li>
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <span><strong>Visual Overlay:</strong> Display HUD showing player IDs, timer values, and red violation banner with timestamp logging for review.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-blurb__specs">
+                        <h3 class="project-blurb__specs-title">Key Technical Achievements</h3>
+                        <ul class="project-blurb__specs-list">
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Real-time Performance:</strong> Processes video at 31 FPS (~35ms per frame) on NVIDIA RTX 3060 (6GB VRAM), Intel i7-10700K. Suitable for live game analysis with minimal latency.
+                                    <br><a href="https://github.com/BarakaLawuo/3-second-violation/blob/main/docs/benchmarks.md" target="_blank" style="color: #667eea; font-size: 0.9rem;">View detailed benchmarks →</a>
+                                </div>
+                            </li>
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Robust Tracking:</strong> ByteTrack maintains player identity through occlusions, improving recall by +11 percentage points over baseline YOLO-only detection (78% → 89%). Tested on 120 held-out sequences from 2022-2023 NBA season.
+                                    <br><a href="https://github.com/BarakaLawuo/3-second-violation/blob/main/results/evaluation.md" target="_blank" style="color: #667eea; font-size: 0.9rem;">View evaluation results →</a>
+                                </div>
+                            </li>
+                            <li class="project-blurb__spec">
+                                <span class="project-blurb__spec-icon">✓</span>
+                                <div>
+                                    <strong>Court-Agnostic Design:</strong> Polygon mask approach works across different camera angles and broadcast feeds without retraining. Validated across 5 different NBA arena camera setups.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Challenges -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Technical Challenges & Solutions</h2>
+                
+                <div class="future-list">
+                    <div class="future-item">
+                        <h3>Challenge: Player Occlusion During Tracking</h3>
+                        <p><strong>Problem:</strong> Players frequently overlap in basketball, causing YOLO to lose tracking and restart player IDs. This leads to timer resets and missed violations.
+                        <br><br><strong>Solution:</strong> Integrated ByteTrack multi-object tracker that associates detections using motion prediction and appearance features. Maintains player IDs through 2-3 second occlusions. Improved recall from 78% (YOLO-only baseline) → 89% (YOLO+ByteTrack).</p>
+                    </div>
+                    
+                    <div class="future-item">
+                        <h3>Challenge: Camera Angle & Broadcast Variance</h3>
+                        <p><strong>Problem:</strong> Broadcast cameras change angles mid-game, distorting the paint polygon coordinates and causing false positives/negatives.
+                        <br><br><strong>Solution:</strong> Normalized polygon coordinates relative to court keypoints (free-throw line, baseline). Validated paint mask accuracy across 5 different NBA arena camera setups (Warriors, Lakers, Celtics, Heat, Bulls).</p>
+                    </div>
+                    
+                    <div class="future-item">
+                        <h3>Challenge: Shot Detection for Timer Reset</h3>
+                        <p><strong>Problem:</strong> Timer should reset when player attempts a shot, but detecting shooting motions is complex and adds latency.
+                        <br><br><strong>Solution (Current):</strong> Uses heuristic—timer resets when player exits paint area (assumes exit = shot attempt). Achieves 89% recall but has ~8% false positive rate.
+                        <br><strong>Future Improvement:</strong> Add pose estimation (MediaPipe/OpenPose) to detect shooting motion and reduce false positives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Code Samples</h2>
+                
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <div class="code-controls">
+                        <div class="code-tabs">
+                            <button class="code-tab active" data-code="0">Timer FSM</button>
+                            <button class="code-tab" data-code="1">Point in Polygon</button>
+                            <button class="code-tab" data-code="2">Detection Pipeline</button>
+                            <button class="code-tab" data-code="3">Centroid Extraction</button>
+                        </div>
+                        <div class="code-timer">
+                            <span id="code-timer-text">Next: 5s</span>
+                            <div class="code-timer-bar">
+                                <div class="code-timer-fill" id="code-timer-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 id="code-title" style="margin-bottom: 0.5rem; color: #333;">Timer State Machine</h3>
+                    <p id="code-description" style="color: #666; margin-bottom: 1rem;">Per-player finite-state timer that tracks time spent in the paint and raises violations at 3.0 seconds.</p>
+                    
+                    <pre><code id="code-display" class="code-content"></code></pre>
+                    
+                    <p style="margin-top: 1rem; color: #666; text-align: center;">
+                        <a href="https://github.com/BarakaLawuo/3-second-violation" 
+                           target="_blank" style="color: #667eea;">
+                            View full implementation on GitHub →
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real Applications -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Practical Applications</h2>
+                
+                <div class="expertise-grid" style="max-width: 900px; margin: 0 auto;">
+                    <div class="expertise-card">
+                        <h3>Post-Game Review Tool</h3>
+                        <p>Export violation timestamps with video clips for coaches to review positioning discipline. Prototype tested with 3 Virginia Tech intramural teams.</p>
+                        <span class="badge badge-results" style="margin-top: 0.5rem;">Tested</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Referee Training Aid</h3>
+                        <p>Side-by-side comparison of AI detections vs. referee calls to identify missed violations and improve officiating consistency.</p>
+                        <span class="badge badge-setup" style="margin-top: 0.5rem;">Concept Phase</span>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h3>Broadcasting Stats Layer</h3>
+                        <p>Overlay real-time timer graphics during broadcasts. Requires sub-100ms latency for live TV (current: 35ms per frame, achievable with optimization).</p>
+                        <span class="badge badge-data" style="margin-top: 0.5rem;">Needs Work</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why This Matters -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Why This Matters</h2>
+                
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem; color: #333;">
+                        Basketball officiating is challenging—referees must track 10 players simultaneously while monitoring multiple rule violations. This project demonstrates how computer vision can augment human judgment with precise, consistent monitoring. The detection + tracking + geometry approach applies to other sports: soccer offsides, hockey icing, and any zone-timing rules.
+                    </p>
+                    
+                    <ul class="importance-list">
+                        <li class="importance-item">
+                            <div class="importance-content">
+                                <strong>Improves Officiating Accuracy</strong>
+                                <span>Provides referees with real-time assistance, reducing missed calls and improving consistency. Could reduce officiating errors by 15-20% based on pilot testing.</span>
+                            </div>
+                        </li>
+                        <li class="importance-item">
+                            <div class="importance-content">
+                                <strong>Enables Advanced Analytics</strong>
+                                <span>Automatically extracts positioning data and timing statistics that are impossible to collect manually at scale. Teams can analyze paint time patterns across entire seasons.</span>
+                            </div>
+                        </li>
+                        <li class="importance-item">
+                            <div class="importance-content">
+                                <strong>Transferable to Other Sports</strong>
+                                <span>The core pipeline (detection → tracking → zone geometry → timing) applies to soccer offsides, hockey icing, football delay-of-game, and any sport with zone-timing rules.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Used -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Tools & Technologies</h2>
+                
+                <div class="expertise-grid" style="max-width: 900px; margin: 0 auto;">
+                    <div class="contact-card">
+                        <div class="contact-icon">🐍</div>
+                        <h3>Python 3.8+</h3>
+                        <p>Core language for computer vision pipeline, data processing, and integration with CV libraries.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">🎯</div>
+                        <h3>YOLOv8</h3>
+                        <p>State-of-the-art object detection for real-time player identification. Pre-trained on COCO, fine-tuned on basketball datasets.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">🔗</div>
+                        <h3>ByteTrack</h3>
+                        <p>Multi-object tracking that maintains stable player IDs through occlusions using motion prediction and appearance features.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📹</div>
+                        <h3>OpenCV</h3>
+                        <p>Computer vision library for video I/O, image processing, drawing overlays, and geometric operations.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">🔢</div>
+                        <h3>NumPy</h3>
+                        <p>Numerical computing for efficient array operations, point-in-polygon tests, and coordinate transformations.</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📊</div>
+                        <h3>Matplotlib</h3>
+                        <p>Visualization for plotting training metrics, analyzing results, and generating evaluation graphs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Development Journey - Dynamic Gallery -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Development Process</h2>
+                <p style="text-align: center; max-width: 700px; margin: 0 auto 3rem; color: #666; font-size: 1.05rem;">
+                    From data collection through deployment, showing key stages of the project.
+                </p>
+                
+                <div class="process-gallery">
+                    <div class="gallery-grid" id="gallery-grid">
+                        <!-- Gallery items will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Lightbox for gallery images -->
+        <div class="lightbox" id="lightbox">
+            <button class="lightbox-close" id="lightbox-close" aria-label="Close lightbox">×</button>
+            <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Previous image">‹</button>
+            <button class="lightbox-nav next" id="lightbox-next" aria-label="Next image">›</button>
+            <div class="lightbox-content">
+                <div class="lightbox-loading" id="lightbox-loading"></div>
+                <img src="" alt="" class="lightbox-image" id="lightbox-image">
+                <p class="lightbox-caption" id="lightbox-caption"></p>
+            </div>
+        </div>
+
+        <!-- Future Work -->
+        <section class="project-section" style="background: white;">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Future Improvements</h2>
+                
+                <ul class="future-list">
+                    <li class="future-item">
+                        <h3>Add Pose Estimation for Shot Detection</h3>
+                        <p>Integrate MediaPipe or OpenPose to detect shooting motions and automatically reset timer. Would reduce false positive rate from ~8% to <3% based on preliminary testing.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Multi-Camera Fusion</h3>
+                        <p>Combine data from multiple camera angles to improve detection accuracy and handle occlusions more robustly using 3D player localization and triangulation.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Offensive vs Defensive Classification</h3>
+                        <p>Train a classifier to distinguish offensive from defensive players (jersey color + court position), only timing violations for offensive players in the paint.</p>
+                    </li>
+                    
+                    <li class="future-item">
+                        <h3>Edge Device Optimization</h3>
+                        <p>Optimize model for NVIDIA Jetson or Intel NUC to enable courtside deployment without cloud latency. Target: maintain 30+ FPS on edge hardware.</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="project-section project-blurb">
+            <div class="project-section__container">
+                <h2 class="project-section__title">Performance Metrics</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto;">
+                    <div class="expertise-card">
+                        <span class="stat-value">120</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Test Sequences</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Held-out clips from 2022-2023 NBA season with diverse camera angles and game situations</p>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <span class="stat-value accent">89%</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Violation Recall</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">+11 pp improvement over YOLO-only baseline (78%). ByteTrack reduces ID switching during occlusions</p>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <span class="stat-value">31 FPS</span>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Processing Speed</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Real-time performance at ~35ms per frame on NVIDIA RTX 3060 (6GB), Intel i7-10700K</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="project-section cta">
+            <div class="cta-container">
+                <h2>Interested in This Project?</h2>
+                <p>I'm happy to discuss the technical implementation, share code, or explore how these computer vision techniques could apply to other sports analytics challenges.</p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/BarakaLawuo/3-second-violation" class="btn" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View Code on GitHub
+                    </a>
+                    <a href="../index.html#contact" class="btn" style="background: white; color: #667eea;">💬 Get in Touch</a>
+                    <a href="../index.html#portfolio" class="btn" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white;">← See More Projects</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="project-footer">
+        <div class="project-footer__container">
+            <div class="project-footer__content">
+                <p class="project-footer__copyright">© 2024 Barakaeli Lawuo. Built with Python, YOLOv8 & ByteTrack</p>
+                
+                <div class="project-footer__links">
+                    <a href="../index.html" class="project-footer__link">Home</a>
+                    <a href="../index.html#portfolio" class="project-footer__link">All Projects</a>
+                    <a href="../index.html#contact" class="project-footer__link">Contact</a>
+                </div>
+                
+                <div class="project-footer__social">
+                    <a href="https://github.com/BarakaLawuo" class="project-footer__social-link" target="_blank" rel="noopener" aria-label="GitHub">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/barakaeli-lawuo" class="project-footer__social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ===========================
+        // ADVANCED UI SYSTEM - 2000+ LINES
+        // ===========================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ===========================
+            // CONFIGURATION & CONSTANTS
+            // ===========================
+            
+            const CONFIG = {
+                particles: {
+                    count: 50,
+                    minSize: 2,
+                    maxSize: 6,
+                    minSpeed: 10,
+                    maxSpeed: 20,
+                    colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe']
+                },
+                cursor: {
+                    trailLength: 10,
+                    trailDelay: 50
+                },
+                matrix: {
+                    columns: 50,
+                    speed: 50,
+                    characters: '01アイウエオカキクケコサシスセソタチツテト'
+                },
+                animations: {
+                    easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                    duration: 600
+                }
+            };
+            
+            // ===========================
+            // UTILITY FUNCTIONS
+            // ===========================
+            
+            const Utils = {
+                random: (min, max) => Math.random() * (max - min) + min,
+                
+                randomInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+                
+                randomColor: (colors) => colors[Math.floor(Math.random() * colors.length)],
+                
+                lerp: (start, end, factor) => start + (end - start) * factor,
+                
+                clamp: (value, min, max) => Math.min(Math.max(value, min), max),
+                
+                debounce: (func, wait) => {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                },
+                
+                throttle: (func, limit) => {
+                    let inThrottle;
+                    return function(...args) {
+                        if (!inThrottle) {
+                            func.apply(this, args);
+                            inThrottle = true;
+                            setTimeout(() => inThrottle = false, limit);
+                        }
+                    };
+                },
+                
+                easeInOutCubic: (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+                
+                easeOutElastic: (t) => {
+                    const c4 = (2 * Math.PI) / 3;
+                    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+                },
+                
+                distance: (x1, y1, x2, y2) => Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)),
+                
+                angle: (x1, y1, x2, y2) => Math.atan2(y2 - y1, x2 - x1)
+            };
+            
+            // ===========================
+            // PARTICLE SYSTEM
+            // ===========================
+            
+            class ParticleSystem {
+                constructor() {
+                    this.container = document.getElementById('particle-container');
+                    this.particles = [];
+                    this.mouse = { x: 0, y: 0 };
+                    this.init();
+                }
+                
+                init() {
+                    for (let i = 0; i < CONFIG.particles.count; i++) {
+                        this.createParticle();
+                    }
+                    
+                    document.addEventListener('mousemove', (e) => {
+                        this.mouse.x = e.clientX;
+                        this.mouse.y = e.clientY;
+                        this.createInteractiveParticle(e.clientX, e.clientY);
+                    });
+                    
+                    this.animate();
+                }
+                
+                createParticle() {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const size = Utils.random(CONFIG.particles.minSize, CONFIG.particles.maxSize);
+                    const startX = Utils.random(0, window.innerWidth);
+                    const duration = Utils.random(CONFIG.particles.minSpeed, CONFIG.particles.maxSpeed);
+                    const delay = Utils.random(0, 5);
+                    const color = Utils.randomColor(CONFIG.particles.colors);
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${startX}px`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.background = `radial-gradient(circle, ${color}, transparent)`;
+                    
+                    this.container.appendChild(particle);
+                    this.particles.push({
+                        element: particle,
+                        x: startX,
+                        y: window.innerHeight,
+                        vx: Utils.random(-1, 1),
+                        vy: Utils.random(-2, -0.5),
+                        size: size
+                    });
+                    
+                    // Remove and recreate after animation
+                    setTimeout(() => {
+                        particle.remove();
+                        this.particles = this.particles.filter(p => p.element !== particle);
+                        this.createParticle();
+                    }, (duration + delay) * 1000);
+                }
+                
+                createInteractiveParticle(x, y) {
+                    if (Math.random() > 0.9) { // Only 10% of the time
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = `${x}px`;
+                        particle.style.top = `${y}px`;
+                        particle.style.width = '8px';
+                        particle.style.height = '8px';
+                        particle.style.animation = 'none';
+                        particle.style.opacity = '1';
+                        
+                        this.container.appendChild(particle);
+                        
+                        const angle = Utils.random(0, Math.PI * 2);
+                        const velocity = Utils.random(2, 5);
+                        const vx = Math.cos(angle) * velocity;
+                        const vy = Math.sin(angle) * velocity;
+                        
+                        let posX = x;
+                        let posY = y;
+                        let opacity = 1;
+                        
+                        const animate = () => {
+                            posX += vx;
+                            posY += vy;
+                            opacity -= 0.02;
+                            
+                            particle.style.left = `${posX}px`;
+                            particle.style.top = `${posY}px`;
+                            particle.style.opacity = opacity;
+                            
+                            if (opacity > 0) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                particle.remove();
+                            }
+                        };
+                        
+                        animate();
+                    }
+                }
+                
+                animate() {
+                    // Continuous animation loop
+                    requestAnimationFrame(() => this.animate());
+                }
+            }
+            
+            // ===========================
+            // CUSTOM CURSOR SYSTEM
+            // ===========================
+            
+            class CustomCursor {
+                constructor() {
+                    this.cursor = document.getElementById('custom-cursor');
+                    this.cursorTrails = [];
+                    this.position = { x: 0, y: 0 };
+                    this.targetPosition = { x: 0, y: 0 };
+                    this.isHovering = false;
+                    this.init();
+                }
+                
+                init() {
+                    // Create cursor trails
+                    for (let i = 0; i < CONFIG.cursor.trailLength; i++) {
+                        const trail = document.createElement('div');
+                        trail.className = 'cursor-trail';
+                        document.body.appendChild(trail);
+                        this.cursorTrails.push({
+                            element: trail,
+                            x: 0,
+                            y: 0
+                        });
+                    }
+                    
+                    // Track mouse movement
+                    document.addEventListener('mousemove', (e) => {
+                        this.targetPosition.x = e.clientX;
+                        this.targetPosition.y = e.clientY;
+                    });
+                    
+                    // Track hover states
+                    document.querySelectorAll('a, button, .gallery-item, .video-tabs__button').forEach(el => {
+                        el.addEventListener('mouseenter', () => {
+                            this.cursor.classList.add('hover');
+                            this.isHovering = true;
+                        });
+                        el.addEventListener('mouseleave', () => {
+                            this.cursor.classList.remove('hover');
+                            this.isHovering = false;
+                        });
+                    });
+                    
+                    // Track clicks
+                    document.addEventListener('mousedown', () => {
+                        this.cursor.classList.add('click');
+                        this.createClickRipple(this.position.x, this.position.y);
+                    });
+                    
+                    document.addEventListener('mouseup', () => {
+                        this.cursor.classList.remove('click');
+                    });
+                    
+                    // Hide default cursor on interactive elements
+                    document.body.style.cursor = 'none';
+                    document.querySelectorAll('a, button').forEach(el => {
+                        el.style.cursor = 'none';
+                    });
+                    
+                    this.animate();
+                }
+                
+                createClickRipple(x, y) {
+                    const ripple = document.createElement('div');
+                    ripple.className = 'ripple';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    document.body.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 800);
+                }
+                
+                animate() {
+                    // Smooth cursor follow with lerp
+                    this.position.x = Utils.lerp(this.position.x, this.targetPosition.x, 0.15);
+                    this.position.y = Utils.lerp(this.position.y, this.targetPosition.y, 0.15);
+                    
+                    this.cursor.style.left = `${this.position.x}px`;
+                    this.cursor.style.top = `${this.position.y}px`;
+                    
+                    // Animate trails with delay
+                    this.cursorTrails.forEach((trail, index) => {
+                        const delay = (index + 1) * 0.05;
+                        trail.x = Utils.lerp(trail.x, this.position.x, 0.1 - delay);
+                        trail.y = Utils.lerp(trail.y, this.position.y, 0.1 - delay);
+                        
+                        trail.element.style.left = `${trail.x}px`;
+                        trail.element.style.top = `${trail.y}px`;
+                        trail.element.style.transform = `translate(-50%, -50%) scale(${1 - index * 0.1})`;
+                        trail.element.style.opacity = 0.8 - index * 0.08;
+                    });
+                    
+                    requestAnimationFrame(() => this.animate());
+                }
+            }
+            
+            // ===========================
+            // MATRIX RAIN EFFECT
+            // ===========================
+            
+            class MatrixRain {
+                constructor() {
+                    this.container = document.getElementById('matrix-rain');
+                    this.columns = [];
+                    this.init();
+                }
+                
+                init() {
+                    const columnCount = Math.floor(window.innerWidth / 20);
+                    
+                    for (let i = 0; i < columnCount; i++) {
+                        this.createColumn(i);
+                    }
+                }
+                
+                createColumn(index) {
+                    const column = document.createElement('div');
+                    column.className = 'matrix-column';
+                    column.style.left = `${index * 20}px`;
+                    
+                    const length = Utils.randomInt(10, 30);
+                    let text = '';
+                    for (let i = 0; i < length; i++) {
+                        text += CONFIG.matrix.characters.charAt(
+                            Math.floor(Math.random() * CONFIG.matrix.characters.length)
+                        );
+                    }
+                    column.textContent = text;
+                    
+                    const duration = Utils.random(5, 15);
+                    const delay = Utils.random(0, 10);
+                    column.style.animationDuration = `${duration}s`;
+                    column.style.animationDelay = `${delay}s`;
+                    
+                    this.container.appendChild(column);
+                    this.columns.push(column);
+                    
+                    // Recreate after animation
+                    setTimeout(() => {
+                        column.remove();
+                        this.createColumn(index);
+                    }, (duration + delay) * 1000);
+                }
+            }
+            
+            // ===========================
+            // SCROLL PROGRESS INDICATOR
+            // ===========================
+            
+            class ScrollProgress {
+                constructor() {
+                    this.bar = document.getElementById('scroll-progress-bar');
+                    this.init();
+                }
+                
+                init() {
+                    window.addEventListener('scroll', Utils.throttle(() => {
+                        const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+                        const scrolled = (window.pageYOffset / windowHeight);
+                        
+                        requestAnimationFrame(() => {
+                            this.bar.style.transform = `scaleX(${scrolled})`;
+                        });
+                    }, 10), { passive: true });
+                }
+            }
+            
+            // ===========================
+            // ADVANCED TOOLTIP SYSTEM
+            // ===========================
+            
+            class TooltipSystem {
+                constructor() {
+                    this.tooltip = document.getElementById('advanced-tooltip');
+                    this.currentTarget = null;
+                    this.init();
+                }
+                
+                init() {
+                    // Add tooltips to all elements with data-tooltip attribute
+                    document.querySelectorAll('[data-tooltip]').forEach(el => {
+                        el.addEventListener('mouseenter', (e) => this.show(e));
+                        el.addEventListener('mouseleave', () => this.hide());
+                        el.addEventListener('mousemove', (e) => this.update(e));
+                    });
+                }
+                
+                show(e) {
+                    const text = e.target.getAttribute('data-tooltip');
+                    this.tooltip.textContent = text;
+                    this.tooltip.classList.add('show');
+                    this.currentTarget = e.target;
+                    this.update(e);
+                }
+                
+                hide() {
+                    this.tooltip.classList.remove('show');
+                    this.currentTarget = null;
+                }
+                
+                update(e) {
+                    if (this.currentTarget) {
+                        requestAnimationFrame(() => {
+                            this.tooltip.style.left = `${e.clientX}px`;
+                            this.tooltip.style.top = `${e.clientY - 50}px`;
+                        });
+                    }
+                }
+            }
+            
+            // ===========================
+            // ADVANCED ANIMATION CONTROLLER
+            // ===========================
+            
+            class AnimationController {
+                constructor() {
+                    this.animations = new Map();
+                    this.rafId = null;
+                    this.isRunning = false;
+                }
+                
+                register(name, callback) {
+                    this.animations.set(name, {
+                        callback,
+                        active: true
+                    });
+                    
+                    if (!this.isRunning) {
+                        this.start();
+                    }
+                }
+                
+                unregister(name) {
+                    this.animations.delete(name);
+                    if (this.animations.size === 0) {
+                        this.stop();
+                    }
+                }
+                
+                start() {
+                    this.isRunning = true;
+                    this.loop();
+                }
+                
+                stop() {
+                    this.isRunning = false;
+                    if (this.rafId) {
+                        cancelAnimationFrame(this.rafId);
+                    }
+                }
+                
+                loop() {
+                    if (!this.isRunning) return;
+                    
+                    this.animations.forEach((anim, name) => {
+                        if (anim.active) {
+                            anim.callback();
+                        }
+                    });
+                    
+                    this.rafId = requestAnimationFrame(() => this.loop());
+                }
+            }
+            
+            const animationController = new AnimationController();
+            
+            // ===========================
+            // MAGNETIC BUTTON EFFECT
+            // ===========================
+            
+            class MagneticButtons {
+                constructor() {
+                    this.buttons = document.querySelectorAll('.project-hero__cta, .video-tabs__button');
+                    this.init();
+                }
+                
+                init() {
+                    this.buttons.forEach(button => {
+                        button.addEventListener('mousemove', (e) => this.handleMove(e, button));
+                        button.addEventListener('mouseleave', () => this.handleLeave(button));
+                    });
+                }
+                
+                handleMove(e, button) {
+                    const rect = button.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    const distance = Math.sqrt(x * x + y * y);
+                    const maxDistance = Math.max(rect.width, rect.height);
+                    
+                    if (distance < maxDistance) {
+                        const strength = 0.3;
+                        requestAnimationFrame(() => {
+                            button.style.transform = `translate(${x * strength}px, ${y * strength}px) scale(1.05)`;
+                        });
+                    }
+                }
+                
+                handleLeave(button) {
+                    requestAnimationFrame(() => {
+                        button.style.transform = 'translate(0, 0) scale(1)';
+                    });
+                }
+            }
+            
+            // ===========================
+            // PARALLAX LAYERS
+            // ===========================
+            
+            class ParallaxLayers {
+                constructor() {
+                    this.layers = document.querySelectorAll('[data-parallax]');
+                    this.init();
+                }
+                
+                init() {
+                    window.addEventListener('scroll', Utils.throttle(() => {
+                        this.update();
+                    }, 16), { passive: true });
+                    
+                    this.update();
+                }
+                
+                update() {
+                    const scrollY = window.pageYOffset;
+                    
+                    this.layers.forEach(layer => {
+                        const speed = parseFloat(layer.getAttribute('data-parallax')) || 0.5;
+                        const yPos = -(scrollY * speed);
+                        
+                        requestAnimationFrame(() => {
+                            layer.style.transform = `translateY(${yPos}px)`;
+                        });
+                    });
+                }
+            }
+            
+            // ===========================
+            // TEXT SCRAMBLE EFFECT
+            // ===========================
+            
+            class TextScramble {
+                constructor(el) {
+                    this.el = el;
+                    this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                    this.update = this.update.bind(this);
+                }
+                
+                setText(newText) {
+                    const oldText = this.el.textContent;
+                    const length = Math.max(oldText.length, newText.length);
+                    const promise = new Promise((resolve) => this.resolve = resolve);
+                    this.queue = [];
+                    
+                    for (let i = 0; i < length; i++) {
+                        const from = oldText[i] || '';
+                        const to = newText[i] || '';
+                        const start = Math.floor(Math.random() * 40);
+                        const end = start + Math.floor(Math.random() * 40);
+                        this.queue.push({ from, to, start, end });
+                    }
+                    
+                    cancelAnimationFrame(this.frameRequest);
+                    this.frame = 0;
+                    this.update();
+                    return promise;
+                }
+                
+                update() {
+                    let output = '';
+                    let complete = 0;
+                    
+                    for (let i = 0, n = this.queue.length; i < n; i++) {
+                        let { from, to, start, end, char } = this.queue[i];
+                        
+                        if (this.frame >= end) {
+                            complete++;
+                            output += to;
+                        } else if (this.frame >= start) {
+                            if (!char || Math.random() < 0.28) {
+                                char = this.randomChar();
+                                this.queue[i].char = char;
+                            }
+                            output += `<span class="dud">${char}</span>`;
+                        } else {
+                            output += from;
+                        }
+                    }
+                    
+                    this.el.innerHTML = output;
+                    
+                    if (complete === this.queue.length) {
+                        this.resolve();
+                    } else {
+                        this.frameRequest = requestAnimationFrame(this.update);
+                        this.frame++;
+                    }
+                }
+                
+                randomChar() {
+                    return this.chars[Math.floor(Math.random() * this.chars.length)];
+                }
+            }
+            
+            // ===========================
+            // SMOOTH SCROLL WITH EASING
+            // ===========================
+            
+            class SmoothScroll {
+                constructor() {
+                    this.links = document.querySelectorAll('a[href^="#"]');
+                    this.init();
+                }
+                
+                init() {
+                    this.links.forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            const href = link.getAttribute('href');
+                            if (href === '#') return;
+                            
+                            e.preventDefault();
+                            const target = document.querySelector(href);
+                            
+                            if (target) {
+                                this.scrollTo(target);
+                            }
+                        });
+                    });
+                }
+                
+                scrollTo(target) {
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                    const startPosition = window.pageYOffset;
+                    const distance = targetPosition - startPosition;
+                    const duration = 1000;
+                    let start = null;
+                    
+                    const animation = (currentTime) => {
+                        if (start === null) start = currentTime;
+                        const timeElapsed = currentTime - start;
+                        const progress = Math.min(timeElapsed / duration, 1);
+                        const ease = Utils.easeInOutCubic(progress);
+                        
+                        window.scrollTo(0, startPosition + distance * ease);
+                        
+                        if (timeElapsed < duration) {
+                            requestAnimationFrame(animation);
+                        }
+                    };
+                    
+                    requestAnimationFrame(animation);
+                }
+            }
+            
+            // ===========================
+            // REVEAL ON SCROLL
+            // ===========================
+            
+            class RevealOnScroll {
+                constructor() {
+                    this.elements = document.querySelectorAll('[data-reveal]');
+                    this.observer = null;
+                    this.init();
+                }
+                
+                init() {
+                    const options = {
+                        root: null,
+                        rootMargin: '0px',
+                        threshold: 0.15
+                    };
+                    
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const delay = entry.target.getAttribute('data-reveal-delay') || 0;
+                                
+                                setTimeout(() => {
+                                    entry.target.classList.add('revealed');
+                                    this.animateIn(entry.target);
+                                }, delay);
+                                
+                                this.observer.unobserve(entry.target);
+                            }
+                        });
+                    }, options);
+                    
+                    this.elements.forEach(el => {
+                        el.style.opacity = '0';
+                        el.style.transform = 'translateY(50px)';
+                        this.observer.observe(el);
+                    });
+                }
+                
+                animateIn(element) {
+                    const duration = 800;
+                    const start = performance.now();
+                    
+                    const animate = (currentTime) => {
+                        const elapsed = currentTime - start;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = Utils.easeOutElastic(progress);
+                        
+                        element.style.opacity = progress;
+                        element.style.transform = `translateY(${50 * (1 - eased)}px)`;
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        }
+                    };
+                    
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            // ===========================
+            // PERFORMANCE MONITOR
+            // ===========================
+            
+            class PerformanceMonitor {
+                constructor() {
+                    this.fps = 0;
+                    this.frames = 0;
+                    this.lastTime = performance.now();
+                    this.init();
+                }
+                
+                init() {
+                    this.measure();
+                }
+                
+                measure() {
+                    this.frames++;
+                    const currentTime = performance.now();
+                    
+                    if (currentTime >= this.lastTime + 1000) {
+                        this.fps = Math.round((this.frames * 1000) / (currentTime - this.lastTime));
+                        this.frames = 0;
+                        this.lastTime = currentTime;
+                        
+                        // Log performance if below 30fps
+                        if (this.fps < 30) {
+                            console.warn(`Low FPS detected: ${this.fps}`);
+                        }
+                    }
+                    
+                    requestAnimationFrame(() => this.measure());
+                }
+                
+                getFPS() {
+                    return this.fps;
+                }
+            }
+            
+            // ===========================
+            // INITIALIZE ALL SYSTEMS
+            // ===========================
+            
+            // Initialize all advanced systems
+            const particleSystem = new ParticleSystem();
+            const customCursor = new CustomCursor();
+            const matrixRain = new MatrixRain();
+            const scrollProgress = new ScrollProgress();
+            const tooltipSystem = new TooltipSystem();
+            const magneticButtons = new MagneticButtons();
+            const parallaxLayers = new ParallaxLayers();
+            const smoothScroll = new SmoothScroll();
+            const revealOnScroll = new RevealOnScroll();
+            const performanceMonitor = new PerformanceMonitor();
+            
+            // Add reveal attributes to sections
+            document.querySelectorAll('.project-section').forEach((section, index) => {
+                section.setAttribute('data-reveal', '');
+                section.setAttribute('data-reveal-delay', index * 100);
+            });
+            
+            // Add parallax to hero elements
+            document.querySelector('.project-hero__title')?.setAttribute('data-parallax', '0.3');
+            document.querySelector('.project-hero__tagline')?.setAttribute('data-parallax', '0.5');
+            
+            // ===========================
+            // TAB SWITCHING FOR VIDEO DEMO
+            // ===========================
+            const tabButtons = document.querySelectorAll('.video-tabs__button');
+            const tabPanels = document.querySelectorAll('.video-tabs__panel');
+            
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('video-tabs__button--active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    tabPanels.forEach(panel => {
+                        panel.classList.remove('video-tabs__panel--active');
+                        panel.hidden = true;
+                    });
+                    
+                    button.classList.add('video-tabs__button--active');
+                    button.setAttribute('aria-selected', 'true');
+                    
+                    const targetPanel = document.getElementById(button.getAttribute('aria-controls'));
+                    if (targetPanel) {
+                        targetPanel.classList.add('video-tabs__panel--active');
+                        targetPanel.hidden = false;
+                    }
+                });
+                
+                button.addEventListener('keydown', (e) => {
+                    let newIndex = index;
+                    if (e.key === 'ArrowRight') {
+                        newIndex = (index + 1) % tabButtons.length;
+                        e.preventDefault();
+                    } else if (e.key === 'ArrowLeft') {
+                        newIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+                        e.preventDefault();
+                    }
+                    if (newIndex !== index) {
+                        tabButtons[newIndex].focus();
+                        tabButtons[newIndex].click();
+                    }
+                });
+            });
+            
+            // Smooth scroll for CTA button
+            const ctaButtons = document.querySelectorAll('.project-hero__cta[href="#video-demo"]');
+            ctaButtons.forEach(ctaButton => {
+                ctaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('video-demo').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // ===========================
+            // CODE SAMPLES WITH TYPEWRITER
+            // ===========================
+            const codeSamples = [
+                {
+                    title: 'Timer State Machine',
+                    description: 'Per-player finite-state timer that tracks time spent in the paint and raises violations at 3.0 seconds.',
+                    code: `def update_timer(player_id, in_paint, took_shot, dt):
+    """
+    Per-ID timer state machine for 3-second violations.
+    
+    Args:
+        player_id: Unique tracking ID from ByteTrack
+        in_paint: Boolean indicating if centroid is in paint
+        took_shot: Boolean for shot detection (future)
+        dt: Time delta since last frame (seconds)
+    """
+    state = timers.setdefault(player_id, {
+        "t": 0.0, 
+        "violation": False
+    })
+    
+    if took_shot:
+        state["t"] = 0.0
+        state["violation"] = False
+        return state
+    
+    if in_paint:
+        state["t"] += dt
+        if state["t"] >= 3.0 and not state["violation"]:
+            state["violation"] = True
+            log_violation(player_id, frame_num, state["t"])
+    else:
+        state["t"] = 0.0
+        state["violation"] = False
+    
+    return state`
+                },
+                {
+                    title: 'Point-in-Polygon Test',
+                    description: 'Ray-casting algorithm to determine if a player\'s centroid lies inside the court paint polygon.',
+                    code: `def point_in_polygon(point, polygon):
+    """
+    Check if point is inside polygon using ray casting.
+    
+    Args:
+        point: (x, y) coordinates of player centroid
+        polygon: List of (x, y) vertices defining paint area
+    
+    Returns:
+        Boolean indicating if point is inside polygon
+    """
+    x, y = point
+    inside = False
+    j = len(polygon) - 1
+    
+    for i in range(len(polygon)):
+        xi, yi = polygon[i]
+        xj, yj = polygon[j]
+        
+        # Check if ray crosses edge
+        intersect = ((yi > y) != (yj > y)) and \\
+                   (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+        
+        if intersect:
+            inside = not inside
+        
+        j = i
+    
+    return inside`
+                },
+                {
+                    title: 'Detection Pipeline',
+                    description: 'Main loop that processes video frames through YOLO detection and ByteTrack tracking.',
+                    code: `def process_frame(frame, frame_num):
+    """
+    Process single frame through detection pipeline.
+    
+    Returns tracked players with paint status.
+    """
+    # YOLOv8 detection
+    detections = yolo_model(frame, conf=0.5)
+    boxes = detections[0].boxes.xyxy.cpu().numpy()
+    
+    # ByteTrack tracking
+    tracks = tracker.update(boxes, frame)
+    
+    players = []
+    for track in tracks:
+        player_id = track.track_id
+        bbox = track.tlbr  # [x1, y1, x2, y2]
+        
+        # Extract centroid
+        centroid = get_centroid(bbox)
+        
+        # Check if in paint
+        in_paint = point_in_polygon(centroid, paint_polygon)
+        
+        # Update timer
+        dt = 1.0 / fps
+        state = update_timer(player_id, in_paint, False, dt)
+        
+        players.append({
+            'id': player_id,
+            'bbox': bbox,
+            'centroid': centroid,
+            'in_paint': in_paint,
+            'timer': state['t'],
+            'violation': state['violation']
+        })
+    
+    return players`
+                },
+                {
+                    title: 'Centroid Extraction',
+                    description: 'Compute the center point of a bounding box for geometry checks.',
+                    code: `def get_centroid(bbox):
+    """
+    Extract centroid from bounding box.
+    
+    Args:
+        bbox: [x1, y1, x2, y2] format from YOLO
+    
+    Returns:
+        (cx, cy) tuple of centroid coordinates
+    """
+    x1, y1, x2, y2 = bbox
+    
+    # Calculate center point
+    cx = (x1 + x2) / 2.0
+    cy = (y1 + y2) / 2.0
+    
+    return (cx, cy)
+
+
+def draw_overlay(frame, players):
+    """
+    Draw detection overlays on frame.
+    """
+    for player in players:
+        x1, y1, x2, y2 = player['bbox']
+        cx, cy = player['centroid']
+        
+        # Draw bounding box
+        color = (0, 0, 255) if player['violation'] else \\
+                (255, 165, 0) if player['in_paint'] else \\
+                (0, 255, 0)
+        
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+        
+        # Draw ID and timer
+        label = f"ID:{player['id']} {player['timer']:.1f}s"
+        cv2.putText(frame, label, (x1, y1-10),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+        
+        # Draw centroid
+        cv2.circle(frame, (int(cx), int(cy)), 5, color, -1)
+    
+    return frame`
+                }
+            ];
+            
+            let currentCodeIndex = 0;
+            let isTyping = false;
+            let typeTimeout;
+            let autoSwitchTimeout;
+            let timerInterval;
+            let timeRemaining = 5;
+            
+            const codeDisplay = document.getElementById('code-display');
+            const codeTitle = document.getElementById('code-title');
+            const codeDescription = document.getElementById('code-description');
+            const codeTimerText = document.getElementById('code-timer-text');
+            const codeTimerFill = document.getElementById('code-timer-fill');
+            const codeTabs = document.querySelectorAll('.code-tab');
+            
+            function typeCode(text, speed = 5) {
+                return new Promise((resolve) => {
+                    codeDisplay.textContent = '';
+                    codeDisplay.classList.add('typing');
+                    isTyping = true;
+                    
+                    let index = 0;
+                    
+                    function type() {
+                        if (index < text.length) {
+                            codeDisplay.textContent += text.charAt(index);
+                            index++;
+                            typeTimeout = setTimeout(type, speed);
+                        } else {
+                            codeDisplay.classList.remove('typing');
+                            isTyping = false;
+                            resolve();
+                        }
+                    }
+                    
+                    type();
+                });
+            }
+            
+            function updateTimer() {
+                timeRemaining--;
+                codeTimerText.textContent = `Next: ${timeRemaining}s`;
+                const progress = (5 - timeRemaining) / 5;
+                codeTimerFill.style.transform = `scaleX(${progress})`;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }
+            
+            function startTimer() {
+                timeRemaining = 5;
+                codeTimerText.textContent = `Next: 5s`;
+                codeTimerFill.style.transform = 'scaleX(0)';
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            async function switchCode(index) {
+                if (isTyping) {
+                    clearTimeout(typeTimeout);
+                    isTyping = false;
+                }
+                
+                clearTimeout(autoSwitchTimeout);
+                clearInterval(timerInterval);
+                
+                currentCodeIndex = index;
+                
+                // Update tabs
+                codeTabs.forEach((tab, i) => {
+                    if (i === index) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Update title and description
+                const sample = codeSamples[index];
+                codeTitle.textContent = sample.title;
+                codeDescription.textContent = sample.description;
+                
+                // Type the code
+                await typeCode(sample.code, 3);
+                
+                // Start timer for next switch
+                startTimer();
+                autoSwitchTimeout = setTimeout(() => {
+                    const nextIndex = (currentCodeIndex + 1) % codeSamples.length;
+                    switchCode(nextIndex);
+                }, 5000);
+            }
+            
+            // Add click handlers to code tabs
+            codeTabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    switchCode(index);
+                });
+            });
+            
+            // Start with first code sample
+            switchCode(0);
+            
+            // ===========================
+            // ADVANCED DYNAMIC GALLERY WITH INTERSECTION OBSERVER
+            // ===========================
+            const galleryData = [
+                {
+                    step: 'STEP 1',
+                    title: 'Player Detection',
+                    description: 'YOLOv8 detects all players on court with bounding boxes. Custom basketball player detection model trained on NBA footage.',
+                    icon: '🎯',
+                    image: '' // Will show placeholder icon
+                },
+                {
+                    step: 'STEP 2',
+                    title: 'Court Keypoint Detection',
+                    description: 'Trained keypoint detection model identifies court landmarks like paint corners, 3-point line, and center court for geometry mapping.',
+                    icon: '📐',
+                    image: ''
+                },
+                {
+                    step: 'STEP 3',
+                    title: 'Paint Zone Mapping',
+                    description: 'Reconstructed court geometry with detected keypoints matched to canonical template. Paint area defined as polygon mask.',
+                    icon: '🗺️',
+                    image: ''
+                },
+                {
+                    step: 'STEP 4',
+                    title: 'ByteTrack Integration',
+                    description: 'SAM2 segmentation with ByteTrack assigns stable IDs to players. Maintains identity through occlusions using motion prediction.',
+                    icon: '🔗',
+                    image: ''
+                },
+                {
+                    step: 'STEP 5',
+                    title: 'Pose Estimation & Ankles',
+                    description: 'YOLOv11 Pose Estimation detects 17 body keypoints per player. Ankle positions determine zone entry/exit for accurate rule enforcement.',
+                    icon: '🦴',
+                    image: ''
+                },
+                {
+                    step: 'STEP 6',
+                    title: 'Zone Occupancy Detection',
+                    description: 'Point-in-polygon test using player ankle coordinates. System detects when both feet enter/exit the paint area.',
+                    icon: '⚡',
+                    image: ''
+                },
+                {
+                    step: 'STEP 7',
+                    title: 'Timer & Violations',
+                    description: 'Per-player FSM tracks time in paint. Red violation banner appears at 3.0s threshold with timestamp logging for review.',
+                    icon: '⏱️',
+                    image: ''
+                }
+            ];
+            
+            const galleryGrid = document.getElementById('gallery-grid');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxClose = document.getElementById('lightbox-close');
+            const lightboxPrev = document.getElementById('lightbox-prev');
+            const lightboxNext = document.getElementById('lightbox-next');
+            const lightboxLoading = document.getElementById('lightbox-loading');
+            
+            let currentLightboxIndex = 0;
+            let imageCache = new Map();
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            // Advanced Intersection Observer for scroll animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const intersectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Staggered animation using requestAnimationFrame
+                        requestAnimationFrame(() => {
+                            entry.target.style.animationPlayState = 'running';
+                        });
+                        
+                        // Add parallax effect on scroll
+                        window.addEventListener('scroll', () => {
+                            const rect = entry.target.getBoundingClientRect();
+                            const scrollPercent = (window.innerHeight - rect.top) / window.innerHeight;
+                            const translateY = (scrollPercent - 0.5) * 20;
+                            
+                            requestAnimationFrame(() => {
+                                entry.target.style.transform = `translateY(${translateY}px)`;
+                            });
+                        }, { passive: true });
+                    }
+                });
+            }, observerOptions);
+            
+            // Preload images for faster lightbox transitions
+            function preloadImage(url) {
+                if (!url || imageCache.has(url)) return Promise.resolve();
+                
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        imageCache.set(url, img);
+                        resolve(img);
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+            
+            // Preload adjacent images in lightbox
+            function preloadAdjacentImages(index) {
+                const prevIndex = (index - 1 + galleryData.length) % galleryData.length;
+                const nextIndex = (index + 1) % galleryData.length;
+                
+                if (galleryData[prevIndex].image) preloadImage(galleryData[prevIndex].image);
+                if (galleryData[nextIndex].image) preloadImage(galleryData[nextIndex].image);
+            }
+            
+            // Generate gallery items with advanced features
+            galleryData.forEach((item, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.style.animationPlayState = 'paused'; // Start paused for Intersection Observer
+                
+                // Add data attribute for easy reference
+                galleryItem.dataset.index = index;
+                
+                galleryItem.innerHTML = `
+                    <div class="gallery-image">
+                        ${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+                        <div class="gallery-placeholder" style="${item.image ? 'display:none;' : ''}">${item.icon}</div>
+                    </div>
+                    <div class="gallery-caption">
+                        <span class="gallery-step">${item.step}</span>
+                        <h3 class="gallery-title">${item.title}</h3>
+                        <p class="gallery-description">${item.description}</p>
+                    </div>
+                `;
+                
+                // Advanced click handler with image preloading
+                galleryItem.addEventListener('click', () => {
+                    const img = galleryItem.querySelector('img');
+                    if (img && img.complete && img.naturalHeight !== 0) {
+                        openLightbox(index);
+                    }
+                });
+                
+                // 3D tilt effect on mouse move
+                galleryItem.addEventListener('mousemove', (e) => {
+                    const rect = galleryItem.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    
+                    requestAnimationFrame(() => {
+                        galleryItem.style.transform = `translateY(-15px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+                    });
+                });
+                
+                galleryItem.addEventListener('mouseleave', () => {
+                    requestAnimationFrame(() => {
+                        galleryItem.style.transform = '';
+                    });
+                });
+                
+                // Double-click for card flip effect (easter egg)
+                let clickCount = 0;
+                let clickTimer = null;
+                galleryItem.addEventListener('click', () => {
+                    clickCount++;
+                    if (clickCount === 1) {
+                        clickTimer = setTimeout(() => {
+                            clickCount = 0;
+                        }, 300);
+                    } else if (clickCount === 2) {
+                        clearTimeout(clickTimer);
+                        clickCount = 0;
+                        galleryItem.classList.toggle('flipped');
+                    }
+                });
+                
+                galleryGrid.appendChild(galleryItem);
+                
+                // Observe for scroll animations
+                intersectionObserver.observe(galleryItem);
+                
+                // Preload images
+                if (item.image) preloadImage(item.image);
+            });
+            
+            // Advanced lightbox functions
+            function openLightbox(index) {
+                currentLightboxIndex = index;
+                const item = galleryData[index];
+                
+                // Show loading indicator
+                lightboxLoading.style.display = 'block';
+                lightboxImage.style.opacity = '0';
+                
+                // Get cached or new image
+                const imgSrc = item.image || galleryGrid.children[index].querySelector('img')?.src;
+                
+                if (imgSrc) {
+                    const cachedImg = imageCache.get(imgSrc);
+                    
+                    if (cachedImg) {
+                        displayLightboxImage(cachedImg.src, item);
+                    } else {
+                        preloadImage(imgSrc).then(() => {
+                            displayLightboxImage(imgSrc, item);
+                        }).catch(() => {
+                            lightboxLoading.style.display = 'none';
+                        });
+                    }
+                }
+                
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scroll
+                
+                // Preload adjacent images
+                preloadAdjacentImages(index);
+                
+                // Update navigation visibility
+                updateNavigationButtons();
+            }
+            
+            function displayLightboxImage(src, item) {
+                lightboxImage.src = src;
+                lightboxCaption.textContent = `${item.step}: ${item.title}`;
+                
+                // Fade in image
+                setTimeout(() => {
+                    lightboxLoading.style.display = 'none';
+                    lightboxImage.style.opacity = '1';
+                }, 100);
+            }
+            
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scroll
+            }
+            
+            function navigateLightbox(direction) {
+                currentLightboxIndex = (currentLightboxIndex + direction + galleryData.length) % galleryData.length;
+                openLightbox(currentLightboxIndex);
+            }
+            
+            function updateNavigationButtons() {
+                // Show/hide navigation based on available images
+                const hasImages = galleryData.some(item => item.image);
+                lightboxPrev.style.display = hasImages ? 'flex' : 'none';
+                lightboxNext.style.display = hasImages ? 'flex' : 'none';
+            }
+            
+            // Lightbox event listeners
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+            lightboxNext.addEventListener('click', () => navigateLightbox(1));
+            
+            // Click outside to close
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                
+                switch(e.key) {
+                    case 'Escape':
+                        closeLightbox();
+                        break;
+                    case 'ArrowLeft':
+                        navigateLightbox(-1);
+                        break;
+                    case 'ArrowRight':
+                        navigateLightbox(1);
+                        break;
+                }
+            });
+            
+            // Touch gestures for mobile
+            lightbox.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            lightbox.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        navigateLightbox(1); // Swipe left - next image
+                    } else {
+                        navigateLightbox(-1); // Swipe right - previous image
+                    }
+                }
+            }
+            
+            // Parallax effect on gallery title
+            window.addEventListener('scroll', () => {
+                const gallerySection = document.querySelector('.process-gallery');
+                if (gallerySection) {
+                    const rect = gallerySection.getBoundingClientRect();
+                    const scrollPercent = (window.innerHeight - rect.top) / window.innerHeight;
+                    const title = gallerySection.previousElementSibling?.previousElementSibling;
+                    
+                    if (title && title.classList.contains('project-section__title')) {
+                        requestAnimationFrame(() => {
+                            const translateY = Math.max(0, (1 - scrollPercent) * 50);
+                            title.style.transform = `translateY(${translateY}px)`;
+                            title.style.opacity = Math.max(0.3, scrollPercent);
+                        });
+                    }
+                }
+            }, { passive: true });
+            
+            // Performance optimization: Debounce resize events
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    // Recalculate any size-dependent animations
+                    console.log('Window resized - recalculating animations');
+                }, 250);
+            }, { passive: true });
+        });
+        
+    </script>
+</body>
+</html>
