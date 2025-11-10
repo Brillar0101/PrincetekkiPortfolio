@@ -29,7 +29,7 @@ const PROJECT_STATUS_CONFIG = {
         "Synthetic Fashion Generator": "in-progress",
         "Industrial Inspection System": "coming-soon",
         "Hand Gesture Recognition": "complete",
-        "Intelligent Parking System": "in-progress"
+        "Three Seconds Violation": "in-progress"
     }
 };
 

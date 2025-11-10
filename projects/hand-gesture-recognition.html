@@ -792,68 +792,6 @@
         }
         
         /* ============================================
-           CUSTOM CURSOR SYSTEM
-           ============================================ */
-        
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transition: all 0.1s ease;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
-        }
-        
-        .custom-cursor::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 6px;
-            height: 6px;
-            background: #667eea;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.2s ease;
-        }
-        
-        .custom-cursor.hover {
-            width: 50px;
-            height: 50px;
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #764ba2;
-        }
-        
-        .custom-cursor.click {
-            animation: cursorClick 0.3s ease;
-        }
-        
-        @keyframes cursorClick {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.5);
-            }
-        }
-        
-        .cursor-trail {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.6;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        /* ============================================
            ANIMATED GRADIENT BACKGROUND
            ============================================ */
         
@@ -1226,9 +1164,8 @@
 </head>
 
 <body>
-    <!-- Advanced UI Elements -->
+    <!-- Advanced UI Elements (Custom cursor REMOVED) -->
     <div class="particle-container" id="particle-container"></div>
-    <div class="custom-cursor" id="custom-cursor"></div>
     <div class="animated-bg"></div>
     <div class="morphing-shapes">
         <div class="morph-shape"></div>
@@ -1646,7 +1583,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- JavaScript (Custom Cursor REMOVED) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
@@ -1660,9 +1597,6 @@
                     minSize: 2,
                     maxSize: 6,
                     colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe']
-                },
-                cursor: {
-                    trailLength: 10
                 }
             };
             
@@ -1672,7 +1606,6 @@
             
             const Utils = {
                 random: (min, max) => Math.random() * (max - min) + min,
-                lerp: (start, end, factor) => start + (end - start) * factor,
                 throttle: (func, limit) => {
                     let inThrottle;
                     return function(...args) {
@@ -1775,96 +1708,6 @@
             }
             
             // ===========================
-            // CUSTOM CURSOR
-            // ===========================
-            
-            class CustomCursor {
-                constructor() {
-                    this.cursor = document.getElementById('custom-cursor');
-                    this.cursorTrails = [];
-                    this.position = { x: 0, y: 0 };
-                    this.targetPosition = { x: 0, y: 0 };
-                    this.init();
-                }
-                
-                init() {
-                    for (let i = 0; i < CONFIG.cursor.trailLength; i++) {
-                        const trail = document.createElement('div');
-                        trail.className = 'cursor-trail';
-                        document.body.appendChild(trail);
-                        this.cursorTrails.push({
-                            element: trail,
-                            x: 0,
-                            y: 0
-                        });
-                    }
-                    
-                    document.addEventListener('mousemove', (e) => {
-                        this.targetPosition.x = e.clientX;
-                        this.targetPosition.y = e.clientY;
-                    });
-                    
-                    document.querySelectorAll('a, button').forEach(el => {
-                        el.addEventListener('mouseenter', () => {
-                            this.cursor.classList.add('hover');
-                        });
-                        el.addEventListener('mouseleave', () => {
-                            this.cursor.classList.remove('hover');
-                        });
-                    });
-                    
-                    document.addEventListener('mousedown', () => {
-                        this.cursor.classList.add('click');
-                        this.createClickRipple(this.position.x, this.position.y);
-                    });
-                    
-                    document.addEventListener('mouseup', () => {
-                        this.cursor.classList.remove('click');
-                    });
-                    
-                    document.body.style.cursor = 'none';
-                    document.querySelectorAll('a, button').forEach(el => {
-                        el.style.cursor = 'none';
-                    });
-                    
-                    this.animate();
-                }
-                
-                createClickRipple(x, y) {
-                    const ripple = document.createElement('div');
-                    ripple.className = 'ripple';
-                    ripple.style.left = `${x}px`;
-                    ripple.style.top = `${y}px`;
-                    ripple.style.width = '20px';
-                    ripple.style.height = '20px';
-                    document.body.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 800);
-                }
-                
-                animate() {
-                    this.position.x = Utils.lerp(this.position.x, this.targetPosition.x, 0.15);
-                    this.position.y = Utils.lerp(this.position.y, this.targetPosition.y, 0.15);
-                    
-                    this.cursor.style.left = `${this.position.x}px`;
-                    this.cursor.style.top = `${this.position.y}px`;
-                    
-                    this.cursorTrails.forEach((trail, index) => {
-                        const delay = (index + 1) * 0.05;
-                        trail.x = Utils.lerp(trail.x, this.position.x, 0.1 - delay);
-                        trail.y = Utils.lerp(trail.y, this.position.y, 0.1 - delay);
-                        
-                        trail.element.style.left = `${trail.x}px`;
-                        trail.element.style.top = `${trail.y}px`;
-                        trail.element.style.transform = `translate(-50%, -50%) scale(${1 - index * 0.1})`;
-                        trail.element.style.opacity = 0.8 - index * 0.08;
-                    });
-                    
-                    requestAnimationFrame(() => this.animate());
-                }
-            }
-            
-            // ===========================
             // SCROLL PROGRESS
             // ===========================
             
@@ -1914,13 +1757,14 @@
             }
             
             // ===========================
-            // INITIALIZE SYSTEMS
+            // INITIALIZE SYSTEMS (CustomCursor REMOVED)
             // ===========================
             
             const particleSystem = new ParticleSystem();
-            const customCursor = new CustomCursor();
             const scrollProgress = new ScrollProgress();
             const smoothScroll = new SmoothScroll();
+            
+            console.log('%c⚡ NBA Player Detection - Cursor-Free Version', 'color: #667eea; font-size: 16px; font-weight: bold;');
             
             // ===========================
             // CODE SAMPLES WITH TYPEWRITER

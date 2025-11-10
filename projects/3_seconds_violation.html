@@ -907,68 +907,6 @@
         }
         
         /* ============================================
-           CUSTOM CURSOR SYSTEM
-           ============================================ */
-        
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transition: all 0.1s ease;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
-        }
-        
-        .custom-cursor::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 6px;
-            height: 6px;
-            background: #667eea;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.2s ease;
-        }
-        
-        .custom-cursor.hover {
-            width: 50px;
-            height: 50px;
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #764ba2;
-        }
-        
-        .custom-cursor.click {
-            animation: cursorClick 0.3s ease;
-        }
-        
-        @keyframes cursorClick {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.5);
-            }
-        }
-        
-        .cursor-trail {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.6;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        /* ============================================
            ANIMATED GRADIENT BACKGROUND
            ============================================ */
         
@@ -1800,9 +1738,8 @@
 
 
 <body>
-    <!-- Advanced UI Elements -->
+    <!-- Advanced UI Elements (Custom cursor elements REMOVED) -->
     <div class="particle-container" id="particle-container"></div>
-    <div class="custom-cursor" id="custom-cursor"></div>
     <div class="animated-bg"></div>
     <div class="morphing-shapes">
         <div class="morph-shape"></div>
@@ -2240,10 +2177,10 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- JavaScript (Custom Cursor code REMOVED) -->
     <script>
         // ===========================
-        // ADVANCED UI SYSTEM - 2000+ LINES
+        // ADVANCED UI SYSTEM
         // ===========================
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -2260,10 +2197,6 @@
                     minSpeed: 10,
                     maxSpeed: 20,
                     colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe']
-                },
-                cursor: {
-                    trailLength: 10,
-                    trailDelay: 50
                 },
                 matrix: {
                     columns: 50,
@@ -2436,106 +2369,6 @@
             }
             
             // ===========================
-            // CUSTOM CURSOR SYSTEM
-            // ===========================
-            
-            class CustomCursor {
-                constructor() {
-                    this.cursor = document.getElementById('custom-cursor');
-                    this.cursorTrails = [];
-                    this.position = { x: 0, y: 0 };
-                    this.targetPosition = { x: 0, y: 0 };
-                    this.isHovering = false;
-                    this.init();
-                }
-                
-                init() {
-                    // Create cursor trails
-                    for (let i = 0; i < CONFIG.cursor.trailLength; i++) {
-                        const trail = document.createElement('div');
-                        trail.className = 'cursor-trail';
-                        document.body.appendChild(trail);
-                        this.cursorTrails.push({
-                            element: trail,
-                            x: 0,
-                            y: 0
-                        });
-                    }
-                    
-                    // Track mouse movement
-                    document.addEventListener('mousemove', (e) => {
-                        this.targetPosition.x = e.clientX;
-                        this.targetPosition.y = e.clientY;
-                    });
-                    
-                    // Track hover states
-                    document.querySelectorAll('a, button, .gallery-item, .video-tabs__button').forEach(el => {
-                        el.addEventListener('mouseenter', () => {
-                            this.cursor.classList.add('hover');
-                            this.isHovering = true;
-                        });
-                        el.addEventListener('mouseleave', () => {
-                            this.cursor.classList.remove('hover');
-                            this.isHovering = false;
-                        });
-                    });
-                    
-                    // Track clicks
-                    document.addEventListener('mousedown', () => {
-                        this.cursor.classList.add('click');
-                        this.createClickRipple(this.position.x, this.position.y);
-                    });
-                    
-                    document.addEventListener('mouseup', () => {
-                        this.cursor.classList.remove('click');
-                    });
-                    
-                    // Hide default cursor on interactive elements
-                    document.body.style.cursor = 'none';
-                    document.querySelectorAll('a, button').forEach(el => {
-                        el.style.cursor = 'none';
-                    });
-                    
-                    this.animate();
-                }
-                
-                createClickRipple(x, y) {
-                    const ripple = document.createElement('div');
-                    ripple.className = 'ripple';
-                    ripple.style.left = `${x}px`;
-                    ripple.style.top = `${y}px`;
-                    ripple.style.width = '20px';
-                    ripple.style.height = '20px';
-                    document.body.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 800);
-                }
-                
-                animate() {
-                    // Smooth cursor follow with lerp
-                    this.position.x = Utils.lerp(this.position.x, this.targetPosition.x, 0.15);
-                    this.position.y = Utils.lerp(this.position.y, this.targetPosition.y, 0.15);
-                    
-                    this.cursor.style.left = `${this.position.x}px`;
-                    this.cursor.style.top = `${this.position.y}px`;
-                    
-                    // Animate trails with delay
-                    this.cursorTrails.forEach((trail, index) => {
-                        const delay = (index + 1) * 0.05;
-                        trail.x = Utils.lerp(trail.x, this.position.x, 0.1 - delay);
-                        trail.y = Utils.lerp(trail.y, this.position.y, 0.1 - delay);
-                        
-                        trail.element.style.left = `${trail.x}px`;
-                        trail.element.style.top = `${trail.y}px`;
-                        trail.element.style.transform = `translate(-50%, -50%) scale(${1 - index * 0.1})`;
-                        trail.element.style.opacity = 0.8 - index * 0.08;
-                    });
-                    
-                    requestAnimationFrame(() => this.animate());
-                }
-            }
-            
-            // ===========================
             // MATRIX RAIN EFFECT
             // ===========================
             
@@ -2650,201 +2483,6 @@
             }
             
             // ===========================
-            // ADVANCED ANIMATION CONTROLLER
-            // ===========================
-            
-            class AnimationController {
-                constructor() {
-                    this.animations = new Map();
-                    this.rafId = null;
-                    this.isRunning = false;
-                }
-                
-                register(name, callback) {
-                    this.animations.set(name, {
-                        callback,
-                        active: true
-                    });
-                    
-                    if (!this.isRunning) {
-                        this.start();
-                    }
-                }
-                
-                unregister(name) {
-                    this.animations.delete(name);
-                    if (this.animations.size === 0) {
-                        this.stop();
-                    }
-                }
-                
-                start() {
-                    this.isRunning = true;
-                    this.loop();
-                }
-                
-                stop() {
-                    this.isRunning = false;
-                    if (this.rafId) {
-                        cancelAnimationFrame(this.rafId);
-                    }
-                }
-                
-                loop() {
-                    if (!this.isRunning) return;
-                    
-                    this.animations.forEach((anim, name) => {
-                        if (anim.active) {
-                            anim.callback();
-                        }
-                    });
-                    
-                    this.rafId = requestAnimationFrame(() => this.loop());
-                }
-            }
-            
-            const animationController = new AnimationController();
-            
-            // ===========================
-            // MAGNETIC BUTTON EFFECT
-            // ===========================
-            
-            class MagneticButtons {
-                constructor() {
-                    this.buttons = document.querySelectorAll('.project-hero__cta, .video-tabs__button');
-                    this.init();
-                }
-                
-                init() {
-                    this.buttons.forEach(button => {
-                        button.addEventListener('mousemove', (e) => this.handleMove(e, button));
-                        button.addEventListener('mouseleave', () => this.handleLeave(button));
-                    });
-                }
-                
-                handleMove(e, button) {
-                    const rect = button.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    
-                    const distance = Math.sqrt(x * x + y * y);
-                    const maxDistance = Math.max(rect.width, rect.height);
-                    
-                    if (distance < maxDistance) {
-                        const strength = 0.3;
-                        requestAnimationFrame(() => {
-                            button.style.transform = `translate(${x * strength}px, ${y * strength}px) scale(1.05)`;
-                        });
-                    }
-                }
-                
-                handleLeave(button) {
-                    requestAnimationFrame(() => {
-                        button.style.transform = 'translate(0, 0) scale(1)';
-                    });
-                }
-            }
-            
-            // ===========================
-            // PARALLAX LAYERS
-            // ===========================
-            
-            class ParallaxLayers {
-                constructor() {
-                    this.layers = document.querySelectorAll('[data-parallax]');
-                    this.init();
-                }
-                
-                init() {
-                    window.addEventListener('scroll', Utils.throttle(() => {
-                        this.update();
-                    }, 16), { passive: true });
-                    
-                    this.update();
-                }
-                
-                update() {
-                    const scrollY = window.pageYOffset;
-                    
-                    this.layers.forEach(layer => {
-                        const speed = parseFloat(layer.getAttribute('data-parallax')) || 0.5;
-                        const yPos = -(scrollY * speed);
-                        
-                        requestAnimationFrame(() => {
-                            layer.style.transform = `translateY(${yPos}px)`;
-                        });
-                    });
-                }
-            }
-            
-            // ===========================
-            // TEXT SCRAMBLE EFFECT
-            // ===========================
-            
-            class TextScramble {
-                constructor(el) {
-                    this.el = el;
-                    this.chars = '!<>-_\\/[]{}—=+*^?#________';
-                    this.update = this.update.bind(this);
-                }
-                
-                setText(newText) {
-                    const oldText = this.el.textContent;
-                    const length = Math.max(oldText.length, newText.length);
-                    const promise = new Promise((resolve) => this.resolve = resolve);
-                    this.queue = [];
-                    
-                    for (let i = 0; i < length; i++) {
-                        const from = oldText[i] || '';
-                        const to = newText[i] || '';
-                        const start = Math.floor(Math.random() * 40);
-                        const end = start + Math.floor(Math.random() * 40);
-                        this.queue.push({ from, to, start, end });
-                    }
-                    
-                    cancelAnimationFrame(this.frameRequest);
-                    this.frame = 0;
-                    this.update();
-                    return promise;
-                }
-                
-                update() {
-                    let output = '';
-                    let complete = 0;
-                    
-                    for (let i = 0, n = this.queue.length; i < n; i++) {
-                        let { from, to, start, end, char } = this.queue[i];
-                        
-                        if (this.frame >= end) {
-                            complete++;
-                            output += to;
-                        } else if (this.frame >= start) {
-                            if (!char || Math.random() < 0.28) {
-                                char = this.randomChar();
-                                this.queue[i].char = char;
-                            }
-                            output += `<span class="dud">${char}</span>`;
-                        } else {
-                            output += from;
-                        }
-                    }
-                    
-                    this.el.innerHTML = output;
-                    
-                    if (complete === this.queue.length) {
-                        this.resolve();
-                    } else {
-                        this.frameRequest = requestAnimationFrame(this.update);
-                        this.frame++;
-                    }
-                }
-                
-                randomChar() {
-                    return this.chars[Math.floor(Math.random() * this.chars.length)];
-                }
-            }
-            
-            // ===========================
             // SMOOTH SCROLL WITH EASING
             // ===========================
             
@@ -2895,130 +2533,15 @@
             }
             
             // ===========================
-            // REVEAL ON SCROLL
-            // ===========================
-            
-            class RevealOnScroll {
-                constructor() {
-                    this.elements = document.querySelectorAll('[data-reveal]');
-                    this.observer = null;
-                    this.init();
-                }
-                
-                init() {
-                    const options = {
-                        root: null,
-                        rootMargin: '0px',
-                        threshold: 0.15
-                    };
-                    
-                    this.observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                const delay = entry.target.getAttribute('data-reveal-delay') || 0;
-                                
-                                setTimeout(() => {
-                                    entry.target.classList.add('revealed');
-                                    this.animateIn(entry.target);
-                                }, delay);
-                                
-                                this.observer.unobserve(entry.target);
-                            }
-                        });
-                    }, options);
-                    
-                    this.elements.forEach(el => {
-                        el.style.opacity = '0';
-                        el.style.transform = 'translateY(50px)';
-                        this.observer.observe(el);
-                    });
-                }
-                
-                animateIn(element) {
-                    const duration = 800;
-                    const start = performance.now();
-                    
-                    const animate = (currentTime) => {
-                        const elapsed = currentTime - start;
-                        const progress = Math.min(elapsed / duration, 1);
-                        const eased = Utils.easeOutElastic(progress);
-                        
-                        element.style.opacity = progress;
-                        element.style.transform = `translateY(${50 * (1 - eased)}px)`;
-                        
-                        if (progress < 1) {
-                            requestAnimationFrame(animate);
-                        }
-                    };
-                    
-                    requestAnimationFrame(animate);
-                }
-            }
-            
-            // ===========================
-            // PERFORMANCE MONITOR
-            // ===========================
-            
-            class PerformanceMonitor {
-                constructor() {
-                    this.fps = 0;
-                    this.frames = 0;
-                    this.lastTime = performance.now();
-                    this.init();
-                }
-                
-                init() {
-                    this.measure();
-                }
-                
-                measure() {
-                    this.frames++;
-                    const currentTime = performance.now();
-                    
-                    if (currentTime >= this.lastTime + 1000) {
-                        this.fps = Math.round((this.frames * 1000) / (currentTime - this.lastTime));
-                        this.frames = 0;
-                        this.lastTime = currentTime;
-                        
-                        // Log performance if below 30fps
-                        if (this.fps < 30) {
-                            console.warn(`Low FPS detected: ${this.fps}`);
-                        }
-                    }
-                    
-                    requestAnimationFrame(() => this.measure());
-                }
-                
-                getFPS() {
-                    return this.fps;
-                }
-            }
-            
-            // ===========================
             // INITIALIZE ALL SYSTEMS
             // ===========================
             
-            // Initialize all advanced systems
+            // Initialize all advanced systems (CustomCursor REMOVED)
             const particleSystem = new ParticleSystem();
-            const customCursor = new CustomCursor();
             const matrixRain = new MatrixRain();
             const scrollProgress = new ScrollProgress();
             const tooltipSystem = new TooltipSystem();
-            const magneticButtons = new MagneticButtons();
-            const parallaxLayers = new ParallaxLayers();
             const smoothScroll = new SmoothScroll();
-            const revealOnScroll = new RevealOnScroll();
-            const performanceMonitor = new PerformanceMonitor();
-            
-            // Add reveal attributes to sections
-            document.querySelectorAll('.project-section').forEach((section, index) => {
-                section.setAttribute('data-reveal', '');
-                section.setAttribute('data-reveal-delay', index * 100);
-            });
-            
-            // Add parallax to hero elements
-            document.querySelector('.project-hero__title')?.setAttribute('data-parallax', '0.3');
-            document.querySelector('.project-hero__tagline')?.setAttribute('data-parallax', '0.5');
             
             // ===========================
             // TAB SWITCHING FOR VIDEO DEMO

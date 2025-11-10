@@ -28,7 +28,7 @@ const PROJECT_URL_MAP = {
     "Synthetic Fashion Generator": "synthetic_fashion_generator.html",
     "Industrial Inspection System": "industrial-inspection-system.html",
     "Hand Gesture Recognition": "hand-gesture-recognition.html",
-    "Intelligent Parking System": "intelligent-parking-system.html"
+    "Three Seconds Violation": "3_seconds_violation.html"
 };
 
 // Function to make project cards clickable
